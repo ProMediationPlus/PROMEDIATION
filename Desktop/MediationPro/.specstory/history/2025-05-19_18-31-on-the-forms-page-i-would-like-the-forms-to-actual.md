@@ -1023,3 +1023,38 @@ First, I'll stage all changes and commit them with a message.
 
 ---
 
+_**User**_
+
+Continue i did the last terminal command
+
+---
+
+_**Assistant**_
+
+OK. I'll create the new branch `forms-update` and push it to your GitHub repository.
+ 
+
+---
+
+_**User**_
+
+Do not use && in terminal commands
+
+---
+
+_**Assistant**_
+
+Okay, I'll implement the "Use Form" functionality.
+
+First, I'll update `FormsPage.tsx` to handle opening a saved form in the `TemplateBuilder` for viewing or editing. This involves:
+1.  Adding a new state variable `editingFormInitialData` to store the data of the form selected for editing.
+2.  Modifying the "New Form" button's `onClick` handler to clear `editingFormInitialData` and open the dialog.
+3.  Modifying the "Use Form" button's `onClick` handler to set `editingFormInitialData` with the selected form's data and then open the dialog.
+4.  Passing `editingFormInitialData` to the `TemplateBuilder` component.
+5.  Changing the `DialogTitle` to "Edit Form" when `editingFormInitialData` is present, and "Create New Form" otherwise.
+6.  Ensuring that when the dialog is closed (either by saving or cancelling), `editingFormInitialData` is reset.
+
+
+
+---
+
