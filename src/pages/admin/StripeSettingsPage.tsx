@@ -38,16 +38,16 @@ const stripeConfig = {
   mode: "test",
   accountId: "acct_1LkrT7CRy7YtB88Z",
   publicKey: {
-    live: "pk_live_xxxxxxxxxxxxxxxxxxxxx",
-    test: "pk_test_51LkrT7CRy7YtB88Z9eJWOD8GtZ5djGU2RQSCghnHxM6zIcn4vGrLa8SH3Eag7clPfU2YGxAJCv5zFBDzVjAfJcU600tOj2BDQE"
+    live: "",
+    test: ""
   },
   secretKey: {
-    live: "sk_live_xxxxxxxxxxxxxxxxxxxxx",
-    test: "sk_test_51LkrT7CRy7YtB88Z9eJWOD8GtZ5djGU2RQSCghnHxM6zIcn4vGrLa8SH3Eag7clPfU2YGxAJCv5zFBDzVjAfJcU600tOj2BDQE"
+    live: "",
+    test: ""
   },
   webhookSecret: {
-    live: "whsec_xxxxxxxxxxxxxxxxxxxxx",
-    test: "whsec_12345678901234567890123456789012"
+    live: "",
+    test: ""
   },
   webhookUrl: "https://app.mediatorpro.com/api/webhooks/stripe",
   paymentMethods: ["card", "bank_transfer"],

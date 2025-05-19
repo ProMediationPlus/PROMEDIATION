@@ -9,9 +9,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MatterDetails } from "@/components/matters/mattersform"; // Corrected import path
+import { CaseDetails } from "@/components/cases/caseform"; // Updated import path
 
-interface Matter {
+interface Case {
   id: string;
   title: string;
   status: string;
@@ -23,13 +23,15 @@ interface Matter {
   email?: string;
   phone?: string;
   address?: string;
+  type?: string; // Added type property
+  lastUpdated?: string;
   // Any other client-specific fields
 }
 
 const ClientDetailsPage = () => {
   const { id: caseId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [matter, setMatter] = useState<Matter | null>(null);
+  const [caseData, setCaseData] = useState<Case | null>(null);
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +41,7 @@ const ClientDetailsPage = () => {
   const iconSizeClass = isMobile ? "h-3.5 w-3.5" : "h-4 w-4";
 
   useEffect(() => {
-    const loadMatter = async () => {
+    const loadCase = async () => {
       if (!caseId) {
         setError("No case ID provided.");
         setIsLoading(false);
@@ -48,41 +50,41 @@ const ClientDetailsPage = () => {
       
       setIsLoading(true);
       try {
-        const matterData = await getItem('matters', caseId);
-        if (matterData) {
-          setMatter(matterData);
+        const caseData = await getItem('cases', caseId);
+        if (caseData) {
+          setCaseData(caseData);
           setError(null);
         } else {
           setError("Case not found.");
-          setMatter(null);
+          setCaseData(null);
         }
       } catch (e) {
-        console.error("Error loading matter data:", e);
+        console.error("Error loading case data:", e);
         setError("Failed to load case data.");
-        setMatter(null);
+        setCaseData(null);
       } finally {
         setIsLoading(false);
       }
     };
     
-    loadMatter();
+    loadCase();
   }, [caseId]);
 
-  const handleSaveMatter = async (updatedMatterData: Partial<Matter>) => {
-    if (!caseId || !matter) return;
+  const handleSaveCase = async (updatedCaseData: Partial<Case>) => {
+    if (!caseId || !caseData) return;
 
     try {
-      const matterToSave = {
-        ...matter,
-        ...updatedMatterData,
+      const caseToSave = {
+        ...caseData,
+        ...updatedCaseData,
         lastUpdated: new Date().toISOString()
       };
 
-      await putItem('matters', matterToSave);
-      setMatter(matterToSave);
+      await putItem('cases', caseToSave);
+      setCaseData(caseToSave);
       toast.success("Client details updated successfully");
     } catch (error) {
-      console.error("Error saving matter:", error);
+      console.error("Error saving case:", error);
       toast.error("Failed to update client details");
     }
   };
@@ -91,7 +93,7 @@ const ClientDetailsPage = () => {
     return <Layout><div className={`${isMobile ? "p-4" : "p-6"}`}>Loading client details...</div></Layout>;
   }
 
-  if (error || !matter) {
+  if (error || !caseData) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-full p-4 md:p-6">
@@ -118,7 +120,7 @@ const ClientDetailsPage = () => {
             <div>
               <h1 className={`${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-tight`}>Client Details</h1>
               <div className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
-                {matter.title} • {matter.caseFileNumber || matter.id}
+                {caseData.title} • {caseData.caseFileNumber || caseData.id}
               </div>
             </div>
           </div>
@@ -186,17 +188,17 @@ const ClientDetailsPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Client Name</h3>
-                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.clientName || "Not provided"}</p>
+                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{caseData.clientName || "Not provided"}</p>
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Case Type</h3>
-                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.type || "Not specified"}</p>
+                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{caseData.type || "Not specified"}</p>
                     </div>
                   </div>
                   <Separator />
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Description</h3>
-                    <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.description || "No description provided"}</p>
+                    <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{caseData.description || "No description provided"}</p>
                   </div>
                   
                   {matter.intakeForm && (
@@ -298,9 +300,8 @@ const ClientDetailsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className={isMobile ? "p-4 pt-0" : ""}>
-            <MatterDetails 
-              matter={matter} 
-              onSave={handleSaveMatter} 
+            <MatterDetails              case={caseData}
+              onSave={handleSaveCase}
             />
           </CardContent>
         </Card>

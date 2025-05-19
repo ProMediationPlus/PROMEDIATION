@@ -8,7 +8,6 @@ import CalendarPage from "./pages/Calendar";
 import Email from "./pages/Email";
 import NewSessionPage from "./pages/NewSession";
 import NotesPage from "./pages/Notes";
-import NewNotePage from "./pages/NewNote";
 import TemplatesPage from "./pages/templates/Templates";
 import StoragePage from "./pages/Storage";
 import CaseFilesPage from "./pages/cases/CaseFiles";
@@ -85,7 +84,6 @@ const App = () => (
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/meeting-notes" element={<MeetingNotesPage />} />
           <Route path="/notes" element={<NotesPage />} />
-          <Route path="/notes/new" element={<NewNotePage />} />
           <Route path="/templates" element={<TemplatesPage />} />
           <Route path="/storage" element={<StoragePage />} />
           <Route path="/forms" element={<FormsPage />} />

@@ -65,8 +65,8 @@ const navItems: NavItem[] = [
     icon: CheckSquare,
   },
   {
-    title: "Documents",
-    href: "/documents",
+    title: "Storage",
+    href: "/storage",
     icon: HardDrive,
   },
   {
