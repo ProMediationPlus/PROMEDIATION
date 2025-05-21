@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/layout";
 import { useState, useEffect } from "react";
 import { getAllItems } from "@/services/localDbService";
-import type { Matter } from "@/types/models";
+import type { Case } from "@/types/models"; // MIGRATION: renamed from 'Matter' to 'Case'
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -63,18 +63,18 @@ const NotesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentCategory, setCurrentCategory] = useState("all");
   const [allNotes, setAllNotes] = useState(initialNotes);
-  const [matters, setMatters] = useState<Matter[]>([]);
+  const [cases, setCases] = useState<Case[]>([]); // MIGRATION: renamed from 'matters, setMatters' to 'cases, setCases'
 
   useEffect(() => {
-    const loadMatters = async () => {
+    const loadCases = async () => { // MIGRATION: renamed from 'loadMatters' to 'loadCases'
       try {
-        const loadedMatters = await getAllItems('matters');
-        setMatters(loadedMatters);
+        const loadedCases = await getAllItems('cases'); // MIGRATION: renamed from 'loadedMatters' to 'loadedCases' and 'matters' to 'cases'
+        setCases(loadedCases); // MIGRATION: renamed from 'setMatters' to 'setCases'
       } catch (error) {
-        console.error("Failed to load matters", error);
+        console.error("Failed to load cases", error); // MIGRATION: renamed from 'matters' to 'cases'
       }
     };
-    loadMatters();
+    loadCases(); // MIGRATION: renamed from 'loadMatters' to 'loadCases'
   }, []);
   const location = useLocation();
   const navigate = useNavigate();
@@ -168,12 +168,12 @@ const NotesPage = () => {
           <Clock className="h-3 w-3" />
           <span>{formatDate(note.date)}</span>
           {note.caseFileNumber && (() => {
-            const matter = matters.find(m => m.caseFileNumber === note.caseFileNumber);
-            return matter ? (
+            const case_ = cases.find(c => c.caseFileNumber === note.caseFileNumber); // MIGRATION: renamed from 'matter' to 'case_', 'matters' to 'cases', and 'm' to 'c'
+            return case_ ? ( // MIGRATION: renamed from 'matter' to 'case_'
               <>
                 <span>•</span>
                 <Link
-                  to={`/case-files/${matter.id}`}
+                  to={`/case-files/${case_.id}`} // MIGRATION: renamed from 'matter.id' to 'case_.id'
                   className="text-blue-600 hover:underline font-mono"
                   title={`View Case File ${note.caseFileNumber}`}
                   onClick={(e) => e.stopPropagation()}

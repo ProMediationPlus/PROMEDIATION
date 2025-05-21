@@ -6,14 +6,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface TaskListProps {
   filteredTasks: Task[];
   showCreateButton?: boolean;
-  matterFilter?: string;
+  caseFilter?: string; // MIGRATION: renamed from 'matterFilter' to 'caseFilter'
 }
 
-export const TaskList = ({ filteredTasks, showCreateButton = true, matterFilter }: TaskListProps) => {
+export const TaskList = ({ filteredTasks, showCreateButton = true, caseFilter }: TaskListProps) { // MIGRATION: renamed from 'matterFilter' to 'caseFilter'
   const isMobile = useIsMobile();
   
-  const displayTasks = matterFilter 
-    ? filteredTasks.filter(task => task.caseTitle.toLowerCase().includes(matterFilter.toLowerCase()))
+  const displayTasks = caseFilter // MIGRATION: renamed from 'matterFilter' to 'caseFilter' 
+    ? filteredTasks.filter(task => task.caseTitle.toLowerCase().includes(caseFilter.toLowerCase())) // MIGRATION: renamed from 'matterFilter' to 'caseFilter'
     : filteredTasks;
 
   return (

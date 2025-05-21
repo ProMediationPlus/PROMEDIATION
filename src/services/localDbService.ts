@@ -1,6 +1,6 @@
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 // Import the canonical schema definition and specific types
-import type { MediatorMateDBSchema, Matter, Note, Contact, Document, Task, CaseFileMetadata } from '@/types/models';
+import type { MediatorMateDBSchema, Case, Note, Contact, Document, Task, CaseFileMetadata } from '@/types/models'; // MIGRATION: renamed from 'Matter' to 'Case'
 
 // --- Database Configuration ---
 const DATABASE_NAME = 'MediatorMateDB';
@@ -17,10 +17,10 @@ const getDb = (): Promise<IDBPDatabase<MediatorMateDBSchema>> => {
         console.log(`Upgrading database from version ${oldVersion} to ${newVersion}`);
 
         // Create object stores if they don't exist
-        if (!db.objectStoreNames.contains('matters')) {
-          const matterStore = db.createObjectStore('matters', { keyPath: 'id' }); // Assuming 'id' is the key
-          matterStore.createIndex('by-status', 'status');
-          console.log("Created 'matters' object store.");
+        if (!db.objectStoreNames.contains('cases')) { // MIGRATION: renamed from 'matters' to 'cases'
+          const caseStore = db.createObjectStore('cases', { keyPath: 'id' }); // Assuming 'id' is the key // MIGRATION: renamed from 'matterStore' to 'caseStore'
+          caseStore.createIndex('by-status', 'status');
+          console.log("Created 'cases' object store."); // MIGRATION: renamed from 'matters' to 'cases'
         }
         if (!db.objectStoreNames.contains('notes')) {
           const noteStore = db.createObjectStore('notes', { keyPath: 'id' }); // Assuming 'id' is the key
@@ -94,7 +94,7 @@ const getDb = (): Promise<IDBPDatabase<MediatorMateDBSchema>> => {
 };
 
 // --- Type alias for store names ---
-type StoreNameUnion = "matters" | "notes" | "contacts" | "documents" | "tasks" | "caseFiles";
+type StoreNameUnion = "cases" | "notes" | "contacts" | "documents" | "tasks" | "caseFiles"; // MIGRATION: renamed from 'matters' to 'cases'
 
 // --- Generic CRUD Operations ---
 
@@ -264,8 +264,8 @@ export const getTasksByDueDate = async (date: Date | IDBKeyRange): Promise<Task[
     return getItemsByIndex('tasks', 'by-dueDate', date);
 };
 
-export const getMattersByStatus = async (status: string): Promise<Matter[]> => {
-    return getItemsByIndex('matters', 'by-status', status);
+export const getCasesByStatus = async (status: string): Promise<Case[]> => { // MIGRATION: renamed from 'getMattersByStatus' to 'getCasesByStatus'
+    return getItemsByIndex('cases', 'by-status', status); // MIGRATION: renamed from 'matters' to 'cases'
 };
 
 export const getContactsByName = async (lastName: string): Promise<Contact[]> => {
