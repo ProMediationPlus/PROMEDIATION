@@ -34,9 +34,10 @@ export interface Contact {
 }
 
 /**
- * Represents a legal matter or case.
+ * Represents a legal case.
+ * // MIGRATION: renamed from 'Matter' to 'Case'
  */
-export interface Matter {
+export interface Case {
   id: string; // Unique identifier (e.g., UUID or Case File Number if unique)
   caseFileNumber: string; // The primary case identifier shown to users
   title: string; // e.g., "Smith v. Jones Mediation"
@@ -45,7 +46,7 @@ export interface Matter {
   description?: string;
   createdAt?: Date;
   updatedAt?: Date;
-  // Add other relevant fields like 'matterType', 'startDate', etc.
+  // Add other relevant fields like 'caseType', 'startDate', etc. // MIGRATION: renamed from 'matterType' to 'caseType'
 }
 
 /**
@@ -109,9 +110,9 @@ export interface TimelineEvent {
 // --- IndexedDB Schema Definition ---
 // Re-define here or import if defined elsewhere consistently
 export interface MediatorMateDBSchema extends DBSchema {
-  matters: {
+  cases: { // MIGRATION: renamed from 'matters' to 'cases'
     key: string;
-    value: Matter;
+    value: Case; // MIGRATION: renamed from 'Matter' to 'Case'
     indexes: { 'by-status': string };
   };
   notes: {
