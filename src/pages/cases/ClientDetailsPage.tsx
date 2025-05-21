@@ -9,9 +9,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MatterDetails } from "@/components/matters/mattersform"; // Corrected import path
+import { CaseDetails } from "@/components/cases/casesform"; // MIGRATION: renamed from 'MatterDetails' to 'CaseDetails' and updated import path
 
-interface Matter {
+interface Case { // MIGRATION: renamed from 'Matter' to 'Case'
   id: string;
   title: string;
   status: string;
@@ -29,7 +29,7 @@ interface Matter {
 const ClientDetailsPage = () => {
   const { id: caseId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [matter, setMatter] = useState<Matter | null>(null);
+  const [case_, setCase] = useState<Case | null>(null); // MIGRATION: renamed from 'matter, setMatter' to 'case_, setCase' and 'Matter' to 'Case'
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +39,7 @@ const ClientDetailsPage = () => {
   const iconSizeClass = isMobile ? "h-3.5 w-3.5" : "h-4 w-4";
 
   useEffect(() => {
-    const loadMatter = async () => {
+    const loadCase = async () => { // MIGRATION: renamed from 'loadMatter' to 'loadCase'
       if (!caseId) {
         setError("No case ID provided.");
         setIsLoading(false);
@@ -48,41 +48,41 @@ const ClientDetailsPage = () => {
       
       setIsLoading(true);
       try {
-        const matterData = await getItem('matters', caseId);
-        if (matterData) {
-          setMatter(matterData);
+        const caseData = await getItem('cases', caseId); // MIGRATION: renamed from 'matterData' to 'caseData' and 'matters' to 'cases'
+        if (caseData) { // MIGRATION: renamed from 'matterData' to 'caseData'
+          setCase(caseData); // MIGRATION: renamed from 'setMatter' to 'setCase' and 'matterData' to 'caseData'
           setError(null);
         } else {
           setError("Case not found.");
-          setMatter(null);
+          setCase(null); // MIGRATION: renamed from 'setMatter' to 'setCase'
         }
       } catch (e) {
-        console.error("Error loading matter data:", e);
+        console.error("Error loading case data:", e); // MIGRATION: renamed from 'matter' to 'case'
         setError("Failed to load case data.");
-        setMatter(null);
+        setCase(null); // MIGRATION: renamed from 'setMatter' to 'setCase'
       } finally {
         setIsLoading(false);
       }
     };
     
-    loadMatter();
+    loadCase(); // MIGRATION: renamed from 'loadMatter' to 'loadCase'
   }, [caseId]);
 
-  const handleSaveMatter = async (updatedMatterData: Partial<Matter>) => {
-    if (!caseId || !matter) return;
+  const handleSaveCase = async (updatedCaseData: Partial<Case>) => { // MIGRATION: renamed from 'handleSaveMatter' to 'handleSaveCase' and 'updatedMatterData: Partial<Matter>' to 'updatedCaseData: Partial<Case>'
+    if (!caseId || !case_) return; // MIGRATION: renamed from 'matter' to 'case_'
 
     try {
-      const matterToSave = {
-        ...matter,
-        ...updatedMatterData,
+      const caseToSave = { // MIGRATION: renamed from 'matterToSave' to 'caseToSave'
+        ...case_, // MIGRATION: renamed from 'matter' to 'case_'
+        ...updatedCaseData, // MIGRATION: renamed from 'updatedMatterData' to 'updatedCaseData'
         lastUpdated: new Date().toISOString()
       };
 
-      await putItem('matters', matterToSave);
-      setMatter(matterToSave);
+      await putItem('cases', caseToSave); // MIGRATION: renamed from 'matters' to 'cases' and 'matterToSave' to 'caseToSave'
+      setCase(caseToSave); // MIGRATION: renamed from 'setMatter' to 'setCase' and 'matterToSave' to 'caseToSave'
       toast.success("Client details updated successfully");
     } catch (error) {
-      console.error("Error saving matter:", error);
+      console.error("Error saving case:", error); // MIGRATION: renamed from 'matter' to 'case'
       toast.error("Failed to update client details");
     }
   };
@@ -91,7 +91,7 @@ const ClientDetailsPage = () => {
     return <Layout><div className={`${isMobile ? "p-4" : "p-6"}`}>Loading client details...</div></Layout>;
   }
 
-  if (error || !matter) {
+  if (error || !case_) { // MIGRATION: renamed from 'matter' to 'case_'
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-full p-4 md:p-6">
@@ -118,7 +118,7 @@ const ClientDetailsPage = () => {
             <div>
               <h1 className={`${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-tight`}>Client Details</h1>
               <div className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
-                {matter.title} • {matter.caseFileNumber || matter.id}
+                {case_.title} • {case_.caseFileNumber || case_.id} {/* MIGRATION: renamed from 'matter' to 'case_' */}
               </div>
             </div>
           </div>
@@ -186,25 +186,25 @@ const ClientDetailsPage = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Client Name</h3>
-                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.clientName || "Not provided"}</p>
+                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{case_.clientName || "Not provided"}</p> {/* MIGRATION: renamed from 'matter' to 'case_' */}
                     </div>
                     <div>
                       <h3 className="text-sm font-medium text-muted-foreground mb-1">Case Type</h3>
-                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.type || "Not specified"}</p>
+                      <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{case_.type || "Not specified"}</p> {/* MIGRATION: renamed from 'matter' to 'case_' */}
                     </div>
                   </div>
                   <Separator />
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-1">Description</h3>
-                    <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.description || "No description provided"}</p>
+                    <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{case_.description || "No description provided"}</p> {/* MIGRATION: renamed from 'matter' to 'case_' */}
                   </div>
                   
-                  {matter.intakeForm && (
+                  {case_.intakeForm && ( // MIGRATION: renamed from 'matter' to 'case_'
                     <>
                       <Separator />
                       <div>
                         <h3 className={`${isMobile ? "text-sm" : ""} font-medium mb-2`}>Intake Form Details</h3>
-                        {Object.entries(matter.intakeForm).map(([key, value]) => (
+                        {Object.entries(case_.intakeForm).map(([key, value]) => ( // MIGRATION: renamed from 'matter' to 'case_'
                           <div key={key} className="mb-1.5">
                             <h4 className={`${isMobile ? "text-[10px]" : "text-xs"} font-medium text-muted-foreground`}>{key}</h4>
                             <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{String(value)}</p>
@@ -232,14 +232,14 @@ const ClientDetailsPage = () => {
                       <Mail className={`${iconSizeClass} mr-2 text-muted-foreground mt-0.5`} />
                       <div>
                         <h3 className={`${isMobile ? "text-xs" : "text-sm"} font-medium mb-1`}>Email Address</h3>
-                        <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.email || "No email provided"}</p>
+                        <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{case_.email || "No email provided"}</p> {/* MIGRATION: renamed from 'matter' to 'case_' */}
                       </div>
                     </div>
                     <div className="flex items-start">
                       <Phone className={`${iconSizeClass} mr-2 text-muted-foreground mt-0.5`} />
                       <div>
                         <h3 className={`${isMobile ? "text-xs" : "text-sm"} font-medium mb-1`}>Phone Number</h3>
-                        <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{matter.phone || "No phone provided"}</p>
+                        <p className={`${isMobile ? "text-xs" : "text-sm"}`}>{case_.phone || "No phone provided"}</p> {/* MIGRATION: renamed from 'matter' to 'case_' */}
                       </div>
                     </div>
                   </div>
@@ -248,7 +248,7 @@ const ClientDetailsPage = () => {
                     <MapPin className={`${iconSizeClass} mr-2 text-muted-foreground mt-0.5`} />
                     <div>
                       <h3 className={`${isMobile ? "text-xs" : "text-sm"} font-medium mb-1`}>Address</h3>
-                      <p className={`${isMobile ? "text-xs" : "text-sm"} whitespace-pre-line`}>{matter.address || "No address provided"}</p>
+                      <p className={`${isMobile ? "text-xs" : "text-sm"} whitespace-pre-line`}>{case_.address || "No address provided"}</p> {/* MIGRATION: renamed from 'matter' to 'case_' */}
                     </div>
                   </div>
                 </CardContent>
@@ -265,9 +265,9 @@ const ClientDetailsPage = () => {
                   <CardDescription>People related to this case</CardDescription>
                 </CardHeader>
                 <CardContent className={`space-y-${isMobile ? '3' : '4'} ${isMobile ? "p-4 pt-0" : ""}`}>
-                  {matter.parties && matter.parties.length > 0 ? (
+                  {case_.parties && case_.parties.length > 0 ? ( // MIGRATION: renamed from 'matter' to 'case_'
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
-                      {matter.parties.map((party, index) => (
+                      {case_.parties.map((party, index) => ( // MIGRATION: renamed from 'matter' to 'case_'
                         <div key={index} className={`${isMobile ? "p-2" : "p-3"} bg-muted rounded-md`}>
                           <p className={`${isMobile ? "text-xs" : ""} font-medium`}>{party}</p>
                         </div>
@@ -298,9 +298,9 @@ const ClientDetailsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className={isMobile ? "p-4 pt-0" : ""}>
-            <MatterDetails 
-              matter={matter} 
-              onSave={handleSaveMatter} 
+            <CaseDetails // MIGRATION: renamed from 'MatterDetails' to 'CaseDetails'
+              case={case_} // MIGRATION: renamed from 'matter={matter}' to 'case={case_}'
+              onSave={handleSaveCase} // MIGRATION: renamed from 'handleSaveMatter' to 'handleSaveCase'
             />
           </CardContent>
         </Card>
