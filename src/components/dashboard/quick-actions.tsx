@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, FileText, FileOutput, Plus } from "lucide-react";
-import { CreateMatterDialog } from "@/components/dialogs/create-matter-dialog";
+import { CreateCaseDialog } from "@/components/dialogs/create-case-dialog"; // MIGRATION: renamed from 'CreateMatterDialog' to 'CreateCaseDialog'
 import { CreateSessionDialog } from "@/components/dialogs/create-session-dialog";
 import { CreateNoteDialog } from "@/components/dialogs/create-note-dialog";
 import { CreateTemplateDialog } from "@/components/dialogs/create-template-dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export function QuickActions() {
-  const [isCreateMatterDialogOpen, setIsCreateMatterDialogOpen] = useState(false);
+  const [isCreateCaseDialogOpen, setIsCreateCaseDialogOpen] = useState(false); // MIGRATION: renamed from 'isCreateMatterDialogOpen, setIsCreateMatterDialogOpen' to 'isCreateCaseDialogOpen, setIsCreateCaseDialogOpen'
   const [isCreateSessionDialogOpen, setIsCreateSessionDialogOpen] = useState(false);
   const [isCreateNoteDialogOpen, setIsCreateNoteDialogOpen] = useState(false);
   const [isCreateTemplateDialogOpen, setIsCreateTemplateDialogOpen] = useState(false);
@@ -52,7 +52,7 @@ export function QuickActions() {
             <Button 
               variant="outline" 
               className={`${isMobile ? "h-16" : "h-20"} flex flex-col gap-1`}
-              onClick={() => setIsCreateMatterDialogOpen(true)} 
+              onClick={() => setIsCreateCaseDialogOpen(true)} {/* MIGRATION: renamed from 'setIsCreateMatterDialogOpen' to 'setIsCreateCaseDialogOpen' */}
             >
               <Plus className={isMobile ? "h-4 w-4" : "h-5 w-5"} />
               <span className={isMobile ? "text-xs" : ""}>Add Case</span>
@@ -61,9 +61,9 @@ export function QuickActions() {
         </CardContent>
       </Card>
 
-      <CreateMatterDialog 
-        isOpen={isCreateMatterDialogOpen} 
-        onClose={() => setIsCreateMatterDialogOpen(false)} 
+      <CreateCaseDialog {/* MIGRATION: renamed from 'CreateMatterDialog' to 'CreateCaseDialog' */}
+        isOpen={isCreateCaseDialogOpen} {/* MIGRATION: renamed from 'isCreateMatterDialogOpen' to 'isCreateCaseDialogOpen' */}
+        onClose={() => setIsCreateCaseDialogOpen(false)} {/* MIGRATION: renamed from 'setIsCreateMatterDialogOpen' to 'setIsCreateCaseDialogOpen' */}
       />
       <CreateSessionDialog 
         isOpen={isCreateSessionDialogOpen} 

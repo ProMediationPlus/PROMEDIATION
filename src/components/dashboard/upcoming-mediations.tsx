@@ -36,19 +36,19 @@ const upcomingMediationsMock = [
 export function UpcomingMediations() {
   const isMobile = useIsMobile();
   const [upcomingMediations, setUpcomingMediations] = useState(upcomingMediationsMock);
-  const [matters, setMatters] = useState<any[]>([]);
+  const [cases, setCases] = useState<any[]>([]); // MIGRATION: renamed from 'matters, setMatters' to 'cases, setCases'
 
-  // Load matters from IndexedDB to get the ID for each caseFileNumber
+  // Load cases from IndexedDB to get the ID for each caseFileNumber // MIGRATION: renamed from 'matters' to 'cases'
   useEffect(() => {
-    const loadMatters = async () => {
+    const loadCases = async () => { // MIGRATION: renamed from 'loadMatters' to 'loadCases'
       try {
-        const mattersData = await getAllItems('matters');
-        setMatters(mattersData);
+        const casesData = await getAllItems('cases'); // MIGRATION: renamed from 'mattersData' to 'casesData' and 'matters' to 'cases'
+        setCases(casesData); // MIGRATION: renamed from 'setMatters' to 'setCases' and 'mattersData' to 'casesData'
       } catch (error) {
-        console.error('Error loading matters:', error);
+        console.error('Error loading cases:', error); // MIGRATION: renamed from 'matters' to 'cases'
       }
     };
-    loadMatters();
+    loadCases(); // MIGRATION: renamed from 'loadMatters' to 'loadCases'
   }, []);
 
   // Format date in a readable way
@@ -72,8 +72,8 @@ export function UpcomingMediations() {
 
   // Find the case ID by caseFileNumber
   const getCaseIdByCaseFileNumber = (caseFileNumber: string) => {
-    const matter = matters.find(m => m.caseFileNumber === caseFileNumber);
-    return matter ? matter.id : null;
+    const case_ = cases.find(c => c.caseFileNumber === caseFileNumber); // MIGRATION: renamed from 'matter' to 'case_', 'matters' to 'cases', and 'm' to 'c'
+    return case_ ? case_.id : null; // MIGRATION: renamed from 'matter' to 'case_'
   };
 
   return (
