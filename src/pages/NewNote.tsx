@@ -13,7 +13,7 @@ import { FileText, Save, ArrowLeft, Check, ChevronsUpDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"; // Added Popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"; // Added Command
 import { cn } from "@/lib/utils"; // Added cn
-import { Matter, Note } from "@/types/models"; // Added Matter, Note types
+import { Case, Note } from "@/types/models"; // MIGRATION: renamed from 'Matter' to 'Case'
 import { getAllItems } from "@/services/localDbService"; // Added DB service
 
 const NewNotePage = () => {
@@ -21,8 +21,8 @@ const NewNotePage = () => {
   const location = useLocation();
   const existingNote: Note | undefined = location.state?.note; // Type existingNote
   const isEditing = !!existingNote;
-  const [matters, setMatters] = useState<Matter[]>([]);
-  const [isLoadingMatters, setIsLoadingMatters] = useState(true);
+  const [cases, setCases] = useState<Case[]>([]); // MIGRATION: renamed from 'matters, setMatters' to 'cases, setCases' and 'Matter' to 'Case'
+  const [isLoadingCases, setIsLoadingCases] = useState(true); // MIGRATION: renamed from 'isLoadingMatters' to 'isLoadingCases'
 
   const [formData, setFormData] = useState({
     title: existingNote?.title || "",
@@ -32,21 +32,21 @@ const NewNotePage = () => {
     content: existingNote?.content || "" // Use content directly
   });
 
-  // Fetch matters for autocomplete
+  // Fetch cases for autocomplete // MIGRATION: renamed from 'matters' to 'cases'
   useEffect(() => {
-    const loadMatters = async () => {
-      setIsLoadingMatters(true);
+    const loadCases = async () => { // MIGRATION: renamed from 'loadMatters' to 'loadCases'
+      setIsLoadingCases(true); // MIGRATION: renamed from 'setIsLoadingMatters' to 'setIsLoadingCases'
       try {
-        const loadedMatters = await getAllItems('matters');
-        setMatters(loadedMatters);
+        const loadedCases = await getAllItems('cases'); // MIGRATION: renamed from 'loadedMatters' to 'loadedCases' and 'matters' to 'cases'
+        setCases(loadedCases); // MIGRATION: renamed from 'setMatters' to 'setCases' and 'loadedMatters' to 'loadedCases'
       } catch (error) {
-        console.error('Error loading matters:', error);
+        console.error('Error loading cases:', error); // MIGRATION: renamed from 'matters' to 'cases'
         toast({ title: "Error", description: "Failed to load case files for selection.", variant: "destructive" });
       } finally {
-        setIsLoadingMatters(false);
+        setIsLoadingCases(false); // MIGRATION: renamed from 'setIsLoadingMatters' to 'setIsLoadingCases'
       }
     };
-    loadMatters();
+    loadCases(); // MIGRATION: renamed from 'loadMatters' to 'loadCases'
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -171,11 +171,11 @@ const NewNotePage = () => {
                         "w-full justify-between",
                         !formData.caseFileNumber && "text-muted-foreground"
                       )}
-                      disabled={isLoadingMatters}
+                      disabled={isLoadingCases} {/* MIGRATION: renamed from 'isLoadingMatters' to 'isLoadingCases' */}
                     >
                       {formData.caseFileNumber
-                        ? matters.find(
-                            (matter) => matter.caseFileNumber === formData.caseFileNumber
+                        ? cases.find( // MIGRATION: renamed from 'matters' to 'cases'
+                            (case_) => case_.caseFileNumber === formData.caseFileNumber // MIGRATION: renamed from 'matter' to 'case_'
                           )?.caseFileNumber // Display selected number
                         : "Select Case File..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -184,23 +184,23 @@ const NewNotePage = () => {
                   <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                     <Command filter={(value, search) => {
                         // Custom filter to match caseFileNumber or title
-                        const matter = matters.find(m => m.caseFileNumber.toLowerCase() === value.toLowerCase());
-                        if (!matter) return 0;
+                        const case_ = cases.find(c => c.caseFileNumber.toLowerCase() === value.toLowerCase()); // MIGRATION: renamed from 'matter' to 'case_', 'matters' to 'cases', and 'm' to 'c'
+                        if (!case_) return 0; // MIGRATION: renamed from 'matter' to 'case_'
                         const term = search.toLowerCase();
-                        if (matter.caseFileNumber.toLowerCase().includes(term)) return 1;
-                        if (matter.title.toLowerCase().includes(term)) return 1;
+                        if (case_.caseFileNumber.toLowerCase().includes(term)) return 1; // MIGRATION: renamed from 'matter' to 'case_'
+                        if (case_.title.toLowerCase().includes(term)) return 1; // MIGRATION: renamed from 'matter' to 'case_'
                         return 0;
                       }}>
                       <CommandInput placeholder="Search case number or title..." />
                       <CommandList>
                         <CommandEmpty>No matching case file found.</CommandEmpty>
                         <CommandGroup>
-                          {matters.map((matter) => (
+                          {cases.map((case_) => ( // MIGRATION: renamed from 'matters' to 'cases' and 'matter' to 'case_'
                             <CommandItem
-                              key={matter.id}
-                              value={matter.caseFileNumber} // Use caseFileNumber as the value for selection
+                              key={case_.id} // MIGRATION: renamed from 'matter' to 'case_'
+                              value={case_.caseFileNumber} // Use caseFileNumber as the value for selection // MIGRATION: renamed from 'matter' to 'case_'
                               onSelect={() => {
-                                handleCaseFileSelect(matter.caseFileNumber);
+                                handleCaseFileSelect(case_.caseFileNumber); // MIGRATION: renamed from 'matter' to 'case_'
                                 // Close popover manually if needed, depends on Command behavior
                                 document.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Escape'}));
                               }}
@@ -208,14 +208,14 @@ const NewNotePage = () => {
                               <Check
                                 className={cn(
                                   "mr-2 h-4 w-4",
-                                  formData.caseFileNumber === matter.caseFileNumber
+                                  formData.caseFileNumber === case_.caseFileNumber // MIGRATION: renamed from 'matter' to 'case_'
                                     ? "opacity-100"
                                     : "opacity-0"
                                 )}
                               />
                               <div>
-                                <div className="font-medium">{matter.caseFileNumber}</div>
-                                <div className="text-xs text-muted-foreground">{matter.title}</div>
+                                <div className="font-medium">{case_.caseFileNumber}</div> {/* MIGRATION: renamed from 'matter' to 'case_' */}
+                                <div className="text-xs text-muted-foreground">{case_.title}</div> {/* MIGRATION: renamed from 'matter' to 'case_' */}
                               </div>
                             </CommandItem>
                           ))}
