@@ -267,7 +267,6 @@ export const getTasksByDueDate = async (date: Date | IDBKeyRange): Promise<Task[
 export const getCasesByStatus = async (status: string): Promise<Case[]> => { // MIGRATION: renamed from 'getMattersByStatus' to 'getCasesByStatus'
     return getItemsByIndex('cases', 'by-status', status); // MIGRATION: renamed from 'matters' to 'cases'
 };
-};
 
 export const getContactsByName = async (lastName: string): Promise<Contact[]> => {
     // Note: This searches by lastName based on the current 'by-name' index
