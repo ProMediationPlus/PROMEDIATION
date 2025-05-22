@@ -3,7 +3,7 @@ import { Layout } from "@/components/layout/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Briefcase, Search, Filter, Trash, Download, Share2 } from "lucide-react";
+import { Briefcase, Search, Filter, Trash, Download, Share2, Plus, ChevronDown, ChevronUp } from "lucide-react"; // Added Plus, ChevronDown, ChevronUp
 import { CreateMatterDialog } from "@/components/dialogs/create-matter-dialog";
 import { EditMatterDialog } from "@/components/dialogs/edit-matter-dialog";
 import { MatterDetails } from "@/components/matters/MatterDetails";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; // Import Link
 import { getAllItems, putItem, deleteItem, getNotesForCase } from "@/services/localDbService";
 import { useIsMobile } from "@/hooks/use-mobile"; // Import the mobile hook
 
@@ -116,6 +116,7 @@ const CaseFilesPage = () => {
   const [matters, setMatters] = useState<{ [key: string]: Matter }>({});
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile(); // Use the mobile hook
+  const [isCreateMatterDialogOpen, setIsCreateMatterDialogOpen] = useState(false); // State for dialog
 
   // Load matters from IndexedDB on initial render
   useEffect(() => {
@@ -306,12 +307,15 @@ const CaseFilesPage = () => {
     }
   };
 
-  const handleCreateMatter = async (newMatterData: Omit<Matter, 'id' | 'lastUpdated'>) => {
+  const handleCreateMatter = async (newMatterData: Omit<Matter, 'id' | 'lastUpdated' | 'status' | 'caseFileName'> & { caseFile?: string }) => {
     try {
       const newId = crypto.randomUUID();
       const matterToAdd: Matter = {
         ...newMatterData,
         id: newId,
+        caseFileNumber: newMatterData.caseFile || `CF-${String(Date.now()).slice(-6)}`, // Use caseFile or generate
+        status: "Pending", // Default status
+        caseFileName: `${newMatterData.title.replace(/\s+/g, '-')}-case-file`, // Generate caseFileName
         lastUpdated: new Date().toISOString(),
         participants: newMatterData.participants || [],
         documents: newMatterData.documents || [],
@@ -326,6 +330,7 @@ const CaseFilesPage = () => {
         [newId]: matterToAdd,
       }));
       toast.success("Case file created successfully");
+      setIsCreateMatterDialogOpen(false); // Close dialog on save
     } catch (error) {
       console.error("Error creating matter in IndexedDB:", error);
       toast.error("Failed to create case file");
@@ -368,9 +373,21 @@ const CaseFilesPage = () => {
                 </AlertDialogContent>
               </AlertDialog>
             )}
-            <CreateMatterDialog onSave={handleCreateMatter} />
+            {/* Add New Case Button */}
+            <Button onClick={() => setIsCreateMatterDialogOpen(true)} size={isMobile ? "sm" : "default"} className="w-full sm:w-auto">
+              <Plus className={`${isMobile ? "h-3 w-3 mr-1" : "mr-2 h-4 w-4"}`} />
+              Add New Case
+            </Button>
           </div>
         </div>
+
+        {/* CreateMatterDialog component */}
+        <CreateMatterDialog
+          isOpen={isCreateMatterDialogOpen}
+          onClose={() => setIsCreateMatterDialogOpen(false)}
+          onSave={handleCreateMatter}
+          showTrigger={false} // We are using our own button to trigger
+        />
 
         <div className="flex flex-col md:flex-row gap-2 md:gap-4">
           <div className="relative flex-1">
@@ -424,12 +441,10 @@ const CaseFilesPage = () => {
                               matter.status === "Pending" ? "text-amber-500" : "text-gray-500"
                             }`} />
                             <div className="ml-2 sm:ml-3 flex-grow">
-                               <span 
-                                 onClick={() => toggleMatterDetails(matter.id)} 
-                                 className={`${isMobile ? "text-xs" : "text-base"} font-medium hover:underline cursor-pointer text-blue-600`}
-                               >
+                               {/* Link to the case summary page */}
+                               <Link to={`/case-files/${matter.id}/summary`} className={`${isMobile ? "text-xs" : "text-base"} font-medium hover:underline cursor-pointer text-blue-600`}>
                                 {matter.title || "Untitled Matter"}
-                               </span>
+                               </Link>
                               <div className={`flex items-center ${isMobile ? "text-[10px]" : "text-xs"} text-muted-foreground space-x-1 sm:space-x-2 mt-0.5 sm:mt-1 flex-wrap`}>
                                 <span>{matter.type || "N/A"}</span>
                                 <span>•</span>
@@ -437,9 +452,9 @@ const CaseFilesPage = () => {
                                 <span>•</span>
                                 {matter.caseFileNumber ? (
                                   <Link
-                                    to={`/case-files/${matter.id}`}
+                                    to={`/case-files/${matter.id}/summary`}
                                     className="text-blue-600 hover:underline"
-                                    title={`View Case File ${matter.caseFileNumber}`}
+                                    title={`View Case Summary for ${matter.caseFileNumber}`}
                                   >
                                     {matter.caseFileNumber}
                                   </Link>
@@ -523,6 +538,9 @@ const CaseFilesPage = () => {
                             <MatterDetails
                               matter={matter}
                               onSave={handleSaveMatter}
+                              // Pass notes and a function to update notes if MatterDetails needs them
+                              // notes={notes.filter(note => note.caseId === matter.id)} 
+                              // onNoteUpdate={handleNoteUpdate} // Assuming you have a handler for note updates
                             />
                           </div>
                         )}
@@ -531,7 +549,11 @@ const CaseFilesPage = () => {
                   ) : (
                     <div className={`${isMobile ? "p-4" : "p-6"} text-center text-muted-foreground`}>
                       <p>No case files found matching your criteria.</p>
-                       <CreateMatterDialog onSave={handleCreateMatter} triggerText="Create New Case File" />
+                       {/* Ensure CreateMatterDialog is not duplicated here if not intended */}
+                       {/* <CreateMatterDialog onSave={handleCreateMatter} triggerText="Create New Case File" /> */}
+                       <Button onClick={() => setIsCreateMatterDialogOpen(true)} variant="link" className="mt-2">
+                         Create New Case File
+                       </Button>
                     </div>
                   )}
                 </div>
@@ -543,7 +565,5 @@ const CaseFilesPage = () => {
     </Layout>
   );
 };
-
-import { ChevronDown, ChevronUp } from "lucide-react";
 
 export default CaseFilesPage;

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeft, MessageSquare, Calendar, Clock, Users, Plus, MoreHorizontal, MapPin } from "lucide-react";
-import { getItem, putItem, getItemsByIndex, deleteItem } from "@/services/localDbService";
+import { getItem, getItemsByIndex, putItem, deleteItem } from "@/services/localDbService"; // Ensure getItemsByIndex is imported
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -51,7 +51,7 @@ interface Matter {
 }
 
 const MeetingsPage = () => {
-  const { id: caseId } = useParams<{ id: string }>();
+  const { id: caseId } = useParams<{ id: string }>(); // This remains the Matter's unique ID
   const [matter, setMatter] = useState<Matter | null>(null);
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,8 +61,11 @@ const MeetingsPage = () => {
   const [currentNotes, setCurrentNotes] = useState<string>('');
   const [isViewDetailsDialogOpen, setIsViewDetailsDialogOpen] = useState(false);
   const [selectedMeetingForDetails, setSelectedMeetingForDetails] = useState<Meeting | null>(null);
+  
+  // newMeeting state now uses caseFileNumber
   const [newMeeting, setNewMeeting] = useState<Partial<Meeting>>({
-    caseId: caseId || '',
+    // caseId: caseId || '', // OLD
+    caseFileNumber: '', // NEW: Will be populated from matter
     title: '',
     date: new Date().toISOString().split('T')[0],
     time: '10:00',
@@ -74,7 +77,7 @@ const MeetingsPage = () => {
   });
   const isMobile = useIsMobile();
 
-  // Load matter details
+  // Load matter details (remains the same, uses caseId from URL)
   useEffect(() => {
     const loadMatter = async () => {
       if (!caseId) {
@@ -105,16 +108,34 @@ const MeetingsPage = () => {
     loadMatter();
   }, [caseId]);
 
-  // Load meetings for this case
+  // Effect to update newMeeting.caseFileNumber when matter is loaded
+  useEffect(() => {
+    if (matter?.caseFileNumber) {
+      setNewMeeting(prev => ({ ...prev, caseFileNumber: matter.caseFileNumber }));
+    } else if (!isLoading && matter === null) { 
+      // If matter loading finished and no matter, or matter has no caseFileNumber
+      setNewMeeting(prev => ({ ...prev, caseFileNumber: '' })); 
+    }
+  }, [matter, isLoading]);
+
+  // Load meetings for this case using matter.caseFileNumber
   useEffect(() => {
     const loadMeetings = async () => {
-      if (!caseId) return;
+      // Ensure matter and matter.caseFileNumber are available
+      if (!matter?.caseFileNumber) {
+        if (matter && !matter.caseFileNumber) {
+          // console.warn("Matter loaded but caseFileNumber is missing. Cannot load meetings.");
+          // toast.warn("Case File Number is missing for this case. Cannot load meetings.");
+          setMeetings([]); // Clear meetings if caseFileNumber is not available
+        }
+        return;
+      }
       
       try {
-        // Assuming you have an index for meetings by caseId
-        const meetingsData = await getItemsByIndex('meetings', 'by-caseId', caseId);
+        // setIsLoading(true); // isLoading is primarily for matter loading
+        // Assumes 'by-caseFileNumber' is the new index in localDbService for meetings
+        const meetingsData = await getItemsByIndex('meetings', 'by-caseFileNumber', matter.caseFileNumber);
         
-        // Sort meetings by date (newest first)
         const sortedMeetings = meetingsData.sort((a, b) => 
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
@@ -122,13 +143,20 @@ const MeetingsPage = () => {
         setMeetings(sortedMeetings);
       } catch (e) {
         console.error("Error loading meetings:", e);
-        toast.error("Failed to load meetings");
+        toast.error("Failed to load meetings for this case file number.");
         setMeetings([]);
+      } finally {
+        // setIsLoading(false);
       }
     };
     
-    loadMeetings();
-  }, [caseId]);
+    // Only attempt to load meetings if matter object exists and initial loading is done
+    if (!isLoading && matter) { 
+      loadMeetings();
+    } else if (!isLoading && !matter) { // If matter loading finished and no matter, clear meetings
+      setMeetings([]);
+    }
+  }, [matter, isLoading]); // Rerun when matter object is loaded/changed or initial loading state changes
 
   const handleOpenNotesEditor = (meeting: Meeting) => {
     setEditingNotesMeetingId(meeting.id);
@@ -171,13 +199,14 @@ const MeetingsPage = () => {
 
 
   const handleCreateMeeting = async () => {
-    if (!caseId) {
-      console.error("Case ID is missing.");
-      toast.error("Cannot create meeting: Case ID is missing.");
+    // Use matter.caseFileNumber directly for creating the meeting
+    if (!matter?.caseFileNumber) {
+      console.error("Case File Number is missing from the current case.");
+      toast.error("Cannot create meeting: Case File Number is missing from the current case.");
       return;
     }
     
-    // Basic validation
+    // Basic validation for other fields
     if (!newMeeting.title || !newMeeting.date || !newMeeting.time || !newMeeting.duration) {
       console.error("Validation failed: Missing required meeting details.", newMeeting);
       toast.error("Please fill in all required meeting details (Title, Date, Time, Duration).");
@@ -186,17 +215,19 @@ const MeetingsPage = () => {
 
     try {
       const now = new Date().toISOString();
+      // Assuming Meeting interface in models.ts now expects caseFileNumber
+      // and other fields are correctly typed in newMeeting state (e.g. date, time, duration are strings)
       const meetingToCreate: Meeting = {
         id: crypto.randomUUID(),
-        caseId,
-        title: newMeeting.title || 'Untitled Meeting', // Provide default if empty
-        date: newMeeting.date,
-        time: newMeeting.time,
-        duration: newMeeting.duration,
-        location: newMeeting.location || 'Not specified', // Provide default
+        caseFileNumber: matter.caseFileNumber, // Use from loaded matter object
+        title: newMeeting.title || 'Untitled Meeting',
+        date: newMeeting.date!, 
+        time: newMeeting.time!, 
+        duration: newMeeting.duration!, 
+        location: newMeeting.location || 'Not specified',
         participants: newMeeting.participants || [],
         agenda: newMeeting.agenda || '',
-        notes: newMeeting.notes || '', // Ensure notes is always a string
+        notes: newMeeting.notes || '', 
         createdAt: now,
         updatedAt: now,
       };
@@ -205,19 +236,16 @@ const MeetingsPage = () => {
       await putItem('meetings', meetingToCreate);
       console.log("Item successfully put into database.");
       
-      // Update the meetings list, maintaining sort order (newest first by date)
       setMeetings(prev => {
         const updatedMeetings = [meetingToCreate, ...prev];
-        const sortedMeetings = updatedMeetings.sort((a, b) => 
+        return updatedMeetings.sort((a, b) => 
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
-        console.log("Meetings state updated and sorted:", sortedMeetings);
-        return sortedMeetings;
       });
       
-      // Reset form and close dialog
       setNewMeeting({
-        caseId: caseId || '',
+        // caseId: caseId || '', // OLD
+        caseFileNumber: matter.caseFileNumber || '', // NEW: reset with the current caseFileNumber
         title: '',
         date: new Date().toISOString().split('T')[0],
         time: '10:00',
