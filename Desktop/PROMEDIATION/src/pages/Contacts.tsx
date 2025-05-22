@@ -334,9 +334,9 @@ const ContactsPage = () => {
                                         return matter ? (
                                           <Link
                                             key={matter.id || cfNumber}
-                                            to={`/case-files/${matter.id}`}
+                                            to={`/case-files/${matter.id}/summary`}
                                             className={`text-blue-600 hover:underline ${isMobile ? "text-[0.65rem]" : "text-xs"}`}
-                                            title={`View Case File ${cfNumber}`}
+                                            title={`View Case Summary for ${cfNumber}`}
                                           >
                                             {cfNumber}
                                           </Link>

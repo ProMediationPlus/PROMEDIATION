@@ -13,11 +13,12 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTasksContext } from "@/contexts/TasksContext";
+import { useTasksContext } from "@/contexts/TasksContext"; // Removed Task import as it's not directly used for uniqueMatters
+import { Matter } from "@/types/models"; // Import Matter type
 
 const formSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
-  caseTitle: z.string().min(3, "Case title is required"),
+  caseId: z.string().nonempty("Case selection is required"), // Changed from caseTitle
   priority: z.string().min(1, "Priority is required"),
   dueDate: z.date({
     required_error: "Due date is required",
@@ -33,11 +34,22 @@ export function CreateTaskDialog() {
   const [open, setOpen] = useState(false);
   const { tasks, handleSaveTask } = useTasksContext();
   
+  // Derive unique matters from tasks for the dropdown
+  // In a real application, this would likely come from a dedicated MattersContext or service
+  const uniqueMatters: Pick<Matter, 'id' | 'caseFileNumber' | 'title'>[] = Array.from(
+    new Map(
+      tasks.map(task => [
+        task.caseId, 
+        { id: task.caseId, caseFileNumber: task.caseFileNumber, title: task.caseTitle }
+      ])
+    ).values()
+  );
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      caseTitle: "",
+      caseId: "", // Changed from caseTitle
       priority: "Medium",
       status: "Pending",
       assignedTo: "Mediator",
@@ -46,22 +58,39 @@ export function CreateTaskDialog() {
   });
 
   function onSubmit(values: FormValues) {
-    // Create new task with next available ID
-    const nextId = Math.max(0, ...tasks.map(task => task.id)) + 1;
+    // Find the next available ID.
+    // Ensure correct parsing if IDs can be numeric strings.
+    const numericTaskIds = tasks.map(task => typeof task.id === 'number' ? task.id : parseInt(task.id as string, 10)).filter(id => !isNaN(id));
+    const nextId = numericTaskIds.length > 0 ? Math.max(0, ...numericTaskIds) + 1 : 1;
     
+    const selectedMatter = uniqueMatters.find(m => m.id === values.caseId);
+
+    if (!selectedMatter) {
+      toast.error("Selected case not found. Please try again.");
+      return;
+    }
+
     const newTask = {
-      id: nextId,
+      id: nextId.toString(), // Ensure ID is a string if TasksContext expects string from models.ts
       title: values.title,
-      caseTitle: values.caseTitle,
-      priority: values.priority,
-      status: values.status,
-      dueDate: values.dueDate,
+      caseId: selectedMatter.id,
+      caseFileNumber: selectedMatter.caseFileNumber,
+      caseTitle: selectedMatter.title, // This is the case title from the selected matter
+      priority: values.priority as "Low" | "Medium" | "High", // Cast to match TaskFormValues
+      status: values.status as 'Todo' | 'In Progress' | 'Done' | 'Blocked', // Cast to match Task model
+      dueDate: values.dueDate, // Keep as Date object
       assignedTo: values.assignedTo,
       description: values.description || "",
+      createdAt: new Date(), // Add createdAt
+      updatedAt: new Date(), // Add updatedAt
     };
     
     // Call the task save function from context
-    handleSaveTask(newTask);
+    // Ensure the structure matches what handleSaveTask expects (TaskFormValues)
+    handleSaveTask({
+      ...newTask,
+      dueDate: values.dueDate.toISOString(), // Convert Date to string for TaskFormValues
+    });
     
     // Show success toast
     toast.success("Task created successfully");
@@ -101,13 +130,24 @@ export function CreateTaskDialog() {
             
             <FormField
               control={form.control}
-              name="caseTitle"
+              name="caseId" // Changed from caseTitle to caseId
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Related Case</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Select related case" {...field} />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select related case" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {uniqueMatters.map((matter) => (
+                        <SelectItem key={matter.id} value={matter.id}>
+                          {matter.caseFileNumber} - {matter.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
