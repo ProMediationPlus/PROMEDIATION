@@ -18,14 +18,14 @@ import { cn } from "@/lib/utils";
 import { Task } from "@/contexts/TasksContext";
 
 const formSchema = z.object({
-  id: z.number(),
+  id: z.string(), // Changed from z.number() to z.string()
   title: z.string().min(2, "Task title is required"),
   caseTitle: z.string().min(2, "Case is required"),
   status: z.string().min(1, "Status is required"),
   priority: z.string().min(1, "Priority is required"),
   dueDate: z.date(),
-  description: z.string().optional(),
-  assignedTo: z.string().min(1, "Assignee is required"),
+  // description: z.string().optional(), // Removed
+  // assignedTo: z.string().min(1, "Assignee is required"), // Removed
 });
 
 export type TaskFormValues = z.infer<typeof formSchema>;
@@ -112,9 +112,10 @@ export function EditTaskDialog({ task, onSave }: EditTaskDialogProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Pending">Pending</SelectItem>
+                        <SelectItem value="Todo">Todo</SelectItem>
                         <SelectItem value="In Progress">In Progress</SelectItem>
-                        <SelectItem value="Completed">Completed</SelectItem>
+                        <SelectItem value="Done">Done</SelectItem>
+                        <SelectItem value="Blocked">Blocked</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -185,7 +186,7 @@ export function EditTaskDialog({ task, onSave }: EditTaskDialogProps) {
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
@@ -215,7 +216,7 @@ export function EditTaskDialog({ task, onSave }: EditTaskDialogProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             
             <DialogFooter>
               <Button type="submit">Save Changes</Button>

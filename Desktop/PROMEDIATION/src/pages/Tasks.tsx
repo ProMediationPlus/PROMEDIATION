@@ -17,22 +17,32 @@ const TasksContent = () => {
   const { tasks } = useTasksContext();
   const isMobile = useIsMobile();
 
-  // Function to get tasks for the TaskList
-  // Now always returns all tasks, relying on sorting from TasksContext
-  // to group them by status.
   const getFilteredTasks = (): Task[] => {
-    return tasks; // 'tasks' from useTasksContext is already sorted
+    let tasksToDisplay = tasks;
+    if (searchQuery) {
+      tasksToDisplay = tasksToDisplay.filter(task => 
+        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.caseTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        task.caseFileNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (activeTab === "all") {
+      return tasksToDisplay;
+    }
+    return tasksToDisplay.filter(task => {
+      if (activeTab === "inProgress") return task.status === "In Progress";
+      if (activeTab === "done") return task.status === "Done";
+      return true; // Should not happen with current tabs
+    });
   };
 
   const filteredTasks = getFilteredTasks();
 
-  // Function to get the title for the current view (can be simplified or removed if tabs no longer imply filtering)
   const getTabTitle = (tab: string) => {
     switch(tab) {
-      case "todo": return "Todo"; // Changed from "pending"
-      case "inProgress": return "In Progress";
-      case "done": return "Done"; // Changed from "completed"
-      case "blocked": return "Blocked";
+      case "inProgress": return "In Progress Tasks";
+      case "done": return "Done Tasks";
       default: return "All Tasks";
     }
   };

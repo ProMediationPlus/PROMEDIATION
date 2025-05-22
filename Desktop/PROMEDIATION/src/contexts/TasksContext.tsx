@@ -50,7 +50,9 @@ const statusOrder: Task['status'][] = ['In Progress', 'Todo', 'Blocked', 'Done']
 
 // Helper function to sort tasks
 const sortTasks = (tasksToSort: Task[]): Task[] => {
-  return tasksToSort.sort((a, b) => {
+  // Ensure we are sorting a copy
+  const arrayToSort = [...tasksToSort]; 
+  arrayToSort.sort((a, b) => {
     const statusAIndex = statusOrder.indexOf(a.status);
     const statusBIndex = statusOrder.indexOf(b.status);
 
@@ -60,6 +62,7 @@ const sortTasks = (tasksToSort: Task[]): Task[] => {
     // If statuses are the same, sort by due date (earliest first)
     return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
   });
+  return arrayToSort; // Return the sorted copy
 };
 
 
@@ -213,8 +216,8 @@ export function TasksProvider({ children }: { children: ReactNode }) {
 
   // Toggle task completion
   const toggleTaskCompletion = (id: string) => { // Changed from number
-    setTasks(prev => {
-      const updatedTasks = prev.map(task => {
+    setTasks(currentTasks => { // Renamed prev to currentTasks for clarity
+      const updatedTasks = currentTasks.map(task => {
         if (task.id === id) {
           const newStatus: Task['status'] = task.status === "Done" ? "Todo" : "Done"; // Explicitly type newStatus
           toast.success(`Task ${newStatus.toLowerCase()}: ${task.title}`);
@@ -226,7 +229,9 @@ export function TasksProvider({ children }: { children: ReactNode }) {
         }
         return task;
       });
-      return sortTasks(updatedTasks);
+      // Ensure tasks are not sorted here to prevent disappearing issue
+      return [...updatedTasks]; 
+      // return sortTasks([...updatedTasks]); 
     });
   };
 
