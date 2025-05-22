@@ -131,7 +131,7 @@ const fullIntakeSchema = z.object({
 // --- End Schemas ---
 
 // --- Interfaces ---
-interface Matter {
+interface Case {
   id: string;
   title: string;
   type: string;
@@ -168,13 +168,13 @@ const mockChecklist = [
 // --- End Mock Data ---
 
 
-interface MatterDetailsProps {
-  matter: Matter;
-  onSave?: (updatedMatter: Matter) => void; // Optional save function prop
+interface CaseDetailsProps {
+  case: Case;
+  onSave?: (updatedCase: Case) => void; // Optional save function prop
 }
 
 // --- Component ---
-export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
+export function CaseDetails({ case: caseData, onSave }: CaseDetailsProps) {
   const [activeTab, setActiveTab] = useState("details");
   const isMobile = useIsMobile();
 
@@ -245,7 +245,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
                 <span className={getResponsiveClasses("text-sm", "")}>Client Details Summary</span>
               </div>
               <Button variant="outline" size={getResponsiveClasses("sm", "default")} className={`${getResponsiveClasses("px-1.5 py-0.5 h-auto", "")} flex items-center gap-1`} asChild>
-                <Link to={`/case-files/${matter.id}/client-details`}>
+                <Link to={`/case-files/${caseData.id}/client-details`}>
                   <ExternalLink className={getResponsiveClasses("h-2.5 w-2.5", "h-4 w-4")} />
                   <span className={getResponsiveClasses("text-[11px]", "text-xs")}>View Full Page</span>
                 </Link>
@@ -259,22 +259,22 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <h4 className="text-sm font-medium mb-1">Party A</h4>
-                  <p className="text-sm text-muted-foreground">{matter?.intakeForm?.partyA?.name || "Not provided"}</p>
-                  <p className="text-xs text-muted-foreground">{matter?.intakeForm?.partyA?.email || "No email"}</p>
+                  <p className="text-sm text-muted-foreground">{caseData?.intakeForm?.partyA?.name || "Not provided"}</p>
+                  <p className="text-xs text-muted-foreground">{caseData?.intakeForm?.partyA?.email || "No email"}</p>
                 </div>
                 <div>
                   <h4 className="text-sm font-medium mb-1">Party B</h4>
-                  <p className="text-sm text-muted-foreground">{matter?.intakeForm?.partyB?.name || "Not provided"}</p>
-                  <p className="text-xs text-muted-foreground">{matter?.intakeForm?.partyB?.email || "No email"}</p>
+                  <p className="text-sm text-muted-foreground">{caseData?.intakeForm?.partyB?.name || "Not provided"}</p>
+                  <p className="text-xs text-muted-foreground">{caseData?.intakeForm?.partyB?.email || "No email"}</p>
                 </div>
               </div>
               {/* Case File Info */}
               <div>
                 <h4 className="text-sm font-medium mb-1">Case File Information</h4>
                 <div className="flex gap-2 items-center flex-wrap">
-                  <Badge variant="outline" className={getResponsiveClasses("text-[10px] px-1.5 py-0.5", "text-xs")}>{matter?.caseFileNumber || "No case #"}</Badge>
-                  <Badge variant="outline" className={getResponsiveClasses("text-[10px] px-1.5 py-0.5", "text-xs")}>{matter?.status || "Unknown"}</Badge>
-                  <Badge variant="outline" className={getResponsiveClasses("text-[10px] px-1.5 py-0.5", "text-xs")}>Updated: {formatDate(matter?.lastUpdated)}</Badge>
+                  <Badge variant="outline" className={getResponsiveClasses("text-[10px] px-1.5 py-0.5", "text-xs")}>{caseData?.caseFileNumber || "No case #"}</Badge>
+                  <Badge variant="outline" className={getResponsiveClasses("text-[10px] px-1.5 py-0.5", "text-xs")}>{caseData?.status || "Unknown"}</Badge>
+                  <Badge variant="outline" className={getResponsiveClasses("text-[10px] px-1.5 py-0.5", "text-xs")}>Updated: {formatDate(caseData?.lastUpdated)}</Badge>
                 </div>
               </div>
             </div>
@@ -295,7 +295,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
                 <span className={getResponsiveClasses("text-sm", "")}>Meetings Summary</span>
               </div>
               <Button variant="outline" size={getResponsiveClasses("sm", "default")} className={`${getResponsiveClasses("px-1.5 py-0.5 h-auto", "")} flex items-center gap-1`} asChild>
-                <Link to={`/case-files/${matter.id}/meetings`}>
+                <Link to={`/case-files/${caseData.id}/meetings`}>
                   <ExternalLink className={getResponsiveClasses("h-2.5 w-2.5", "h-4 w-4")} />
                   <span className={getResponsiveClasses("text-[11px]", "text-xs")}>View Full Page</span>
                 </Link>
@@ -342,7 +342,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
                 <span className={getResponsiveClasses("text-sm", "")}>Forms Status</span>
               </div>
               <Button variant="outline" size={getResponsiveClasses("sm", "default")} className={`${getResponsiveClasses("px-1.5 py-0.5 h-auto", "")} flex items-center gap-1`} asChild>
-                <Link to={`/case-files/${matter.id}/forms`}>
+                <Link to={`/case-files/${caseData.id}/forms`}>
                   <ExternalLink className={getResponsiveClasses("h-2.5 w-2.5", "h-4 w-4")} />
                   <span className={getResponsiveClasses("text-[11px]", "text-xs")}>View Full Page</span>
                 </Link>
@@ -399,7 +399,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
                 <span className={getResponsiveClasses("text-sm", "")}>Timeline Highlights</span>
               </div>
               <Button variant="outline" size={getResponsiveClasses("sm", "default")} className={`${getResponsiveClasses("px-1.5 py-0.5 h-auto", "")} flex items-center gap-1`} asChild>
-                <Link to={`/case-files/${matter.id}/timeline`}>
+                <Link to={`/case-files/${caseData.id}/timeline`}>
                   <ExternalLink className={getResponsiveClasses("h-2.5 w-2.5", "h-4 w-4")} />
                   <span className={getResponsiveClasses("text-[11px]", "text-xs")}>View Full Page</span>
                 </Link>
@@ -414,7 +414,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
                 <div className="absolute h-3 w-3 bg-primary rounded-full -left-[6.5px] top-1 border-2 border-background"></div>
                 <div>
                   <p className="text-sm font-medium">Case Created</p>
-                  <p className="text-xs text-muted-foreground">{formatDate(matter?.lastUpdated)}</p>
+                  <p className="text-xs text-muted-foreground">{formatDate(caseData?.lastUpdated)}</p>
                 </div>
               </div>
               <div className="relative pl-6 border-l border-dashed border-gray-200">
@@ -449,7 +449,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
                 <span className={getResponsiveClasses("text-sm", "")}>Templates</span>
               </div>
               <Button variant="outline" size={getResponsiveClasses("sm", "default")} className={`${getResponsiveClasses("px-1.5 py-0.5 h-auto", "")} flex items-center gap-1`} asChild>
-                {/* Link should ideally go to a templates page filtered for this matter, or the general templates page */}
+                {/* Link should ideally go to a templates page filtered for this case, or the general templates page */}
                 <Link to={`/templates`}>
                   <ExternalLink className={getResponsiveClasses("h-2.5 w-2.5", "h-4 w-4")} />
                   <span className={getResponsiveClasses("text-[11px]", "text-xs")}>View Templates</span>
@@ -500,7 +500,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) {
                 <span className={getResponsiveClasses("text-sm", "")}>Checklist Progress</span>
               </div>
               <Button variant="outline" size={getResponsiveClasses("sm", "default")} className={`${getResponsiveClasses("px-1.5 py-0.5 h-auto", "")} flex items-center gap-1`} asChild>
-                <Link to={`/case-files/${matter.id}/checklist`}>
+                <Link to={`/case-files/${caseData.id}/checklist`}>
                   <ExternalLink className={getResponsiveClasses("h-2.5 w-2.5", "h-4 w-4")} />
                   <span className={getResponsiveClasses("text-[11px]", "text-xs")}>View Full Page</span>
                 </Link>

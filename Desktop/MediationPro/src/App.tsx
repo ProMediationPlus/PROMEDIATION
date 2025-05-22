@@ -75,8 +75,8 @@ const App = () => (
           <Route path="/case-files/:id/meetings" element={<MeetingsPage />} /> {/* Add route for MeetingsPage */}
           <Route path="/case-files/:id/client-details" element={<ClientDetailsPage />} /> {/* Add route for ClientDetailsPage */}
           <Route path="/case-files/:id/templates" element={<TemplatesPage />} /> {/* Add route for case-specific Templates */}
-          <Route path="/matters" element={<Navigate to="/case-files" replace />} />
-          <Route path="/matters/:id" element={<Navigate to="/case-files/:id" replace />} />
+          <Route path="/cases" element={<Navigate to="/case-files" replace />} />
+          <Route path="/cases/:id" element={<Navigate to="/case-files/:id" replace />} />
           <Route path="/tasks" element={<TasksPage />} />
           <Route path="/contacts" element={<ContactsPage />} />
           <Route path="/billing" element={<BillingPage />} />

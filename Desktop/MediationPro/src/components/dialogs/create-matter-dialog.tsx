@@ -11,8 +11,8 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
-  title: z.string().min(2, "Matter title is required"),
-  type: z.string().min(1, "Matter type is required"),
+  title: z.string().min(2, "Case title is required"),
+  type: z.string().min(1, "Case type is required"),
   clientName: z.string().min(2, "Client name is required"),
   caseFile: z.string()
     .min(9, "Case file must be in format CF-XXXXXX")
@@ -21,9 +21,9 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface CreateMatterDialogProps {
+interface CreateCaseDialogProps {
   // onSave should only pass the data collected by the form
-  onSave?: (matterData: FormValues) => void;
+  onSave?: (caseData: FormValues) => void;
   // External control props
   isOpen?: boolean;
   onClose?: () => void;
@@ -31,7 +31,7 @@ interface CreateMatterDialogProps {
   showTrigger?: boolean;
 }
 
-export function CreateMatterDialog({ onSave, isOpen, onClose, showTrigger = false }: CreateMatterDialogProps) {
+export function CreateCaseDialog({ onSave, isOpen, onClose, showTrigger = false }: CreateCaseDialogProps) {
   // Use local state for internal control
   const [localOpen, setLocalOpen] = useState(false);
   
@@ -64,7 +64,7 @@ export function CreateMatterDialog({ onSave, isOpen, onClose, showTrigger = fals
       onSave(values);
     } else {
       // Default behavior if no onSave is provided
-      toast.success("Matter created successfully");
+      toast.success("Case created successfully");
     }
     
     // Reset form and close dialog
@@ -79,7 +79,7 @@ export function CreateMatterDialog({ onSave, isOpen, onClose, showTrigger = fals
       onOpenAutoFocus={(event) => event.preventDefault()}
     >
       <DialogHeader>
-        <DialogTitle>Create New Matter</DialogTitle>
+        <DialogTitle>Create New Case</DialogTitle>
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -106,7 +106,7 @@ export function CreateMatterDialog({ onSave, isOpen, onClose, showTrigger = fals
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select matter type" />
+                      <SelectValue placeholder="Select case type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -182,7 +182,7 @@ export function CreateMatterDialog({ onSave, isOpen, onClose, showTrigger = fals
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          New Matter
+          New Case
         </Button>
       </DialogTrigger>
       {dialogContent}

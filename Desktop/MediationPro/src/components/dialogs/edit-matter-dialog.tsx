@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,9 @@ import { Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-// Define Matter interface consistent with other components
-// Ideally, move this to a shared types file (e.g., src/types/matter.ts)
-interface Matter {
+// Define Case interface consistent with other components
+// Ideally, move this to a shared types file (e.g., src/types/case.ts)
+interface Case {
   id: string;
   title: string;
   type: string;
@@ -33,7 +32,7 @@ interface Matter {
   intakeForm?: any;
 }
 
-// Update schema to use string ID and match Matter interface fields
+// Update schema to use string ID and match Case interface fields
 const formSchema = z.object({
   id: z.string(), // Changed to string
   title: z.string().min(2, "Case title is required"),
@@ -41,54 +40,54 @@ const formSchema = z.object({
   status: z.string().min(1, "Status is required"),
   clientName: z.string().min(2, "Client name is required"),
   description: z.string().optional(),
-  lastUpdated: z.string(), // Keep lastUpdated from the Matter object
+  lastUpdated: z.string(), // Keep lastUpdated from the Case object
   caseFileNumber: z.string().min(1, "Case file number is required"),
   caseFileName: z.string().min(1, "Case file name is required"),
   // Do not include fields not edited directly in this form (like intakeForm, participants etc.)
   // unless the dialog is intended to edit them too.
 });
 
-export type MatterFormValues = z.infer<typeof formSchema>;
+export type CaseFormValues = z.infer<typeof formSchema>;
 
-// Props now use the consistent Matter interface
-interface EditMatterDialogProps {
-  matter: Matter; // Expect the full Matter object
-  onSave: (matter: Matter) => void; // Pass back the full Matter object
+// Props now use the consistent Case interface
+interface EditCaseDialogProps {
+  case: Case; // Expect the full Case object
+  onSave: (case: Case) => void; // Pass back the full Case object
 }
-export function EditMatterDialog({ matter: initialMatterData, onSave }: EditMatterDialogProps) {
+export function EditCaseDialog({ case: initialCaseData, onSave }: EditCaseDialogProps) {
   const [open, setOpen] = useState(false);
 
   
-  // Initialize form with values from the passed Matter prop
+  // Initialize form with values from the passed Case prop
   // Ensure only fields defined in formSchema are passed as defaultValues
-  const form = useForm<MatterFormValues>({
+  const form = useForm<CaseFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: initialMatterData.id,
-      title: initialMatterData.title,
-      type: initialMatterData.type,
-      status: initialMatterData.status,
-      clientName: initialMatterData.clientName,
-      description: initialMatterData.description || "", // Handle optional description
-      lastUpdated: initialMatterData.lastUpdated,
-      caseFileNumber: initialMatterData.caseFileNumber,
-      caseFileName: initialMatterData.caseFileName,
+      id: initialCaseData.id,
+      title: initialCaseData.title,
+      type: initialCaseData.type,
+      status: initialCaseData.status,
+      clientName: initialCaseData.clientName,
+      description: initialCaseData.description || "", // Handle optional description
+      lastUpdated: initialCaseData.lastUpdated,
+      caseFileNumber: initialCaseData.caseFileNumber,
+      caseFileName: initialCaseData.caseFileName,
     },
   });
 
-  function onSubmit(formValues: MatterFormValues) {
-    // Merge form values with the original matter data to preserve fields not in the form
-    const updatedMatter: Matter = {
-      ...initialMatterData, // Start with original data
+  function onSubmit(formValues: CaseFormValues) {
+    // Merge form values with the original case data to preserve fields not in the form
+    const updatedCase: Case = {
+      ...initialCaseData, // Start with original data
       ...formValues,       // Overwrite with form values
       lastUpdated: new Date().toISOString() // Update timestamp (use full ISO string)
     };
 
-    // Save the complete updated matter object
-    onSave(updatedMatter);
+    // Save the complete updated case object
+    onSave(updatedCase);
 
     // Show success toast
-    toast.success("Matter updated successfully");
+    toast.success("Case updated successfully");
     
     // Close dialog
     setOpen(false);
@@ -219,7 +218,7 @@ export function EditMatterDialog({ matter: initialMatterData, onSave }: EditMatt
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Enter matter details here..."
+                      placeholder="Enter case details here..."
                       className="resize-none"
                       {...field}
                     />

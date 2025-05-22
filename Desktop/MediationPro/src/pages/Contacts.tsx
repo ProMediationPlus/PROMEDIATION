@@ -20,7 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { Contact, Matter } from "@/types/models";
+import { Contact, Case } from "@/types/models";
 import { addItem, getAllItems, putItem, deleteItem } from "@/services/localDbService";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -63,7 +63,7 @@ const initialContacts: Contact[] = [
 
 const ContactsPage = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [matters, setMatters] = useState<Matter[]>([]);
+  const [cases, setCases] = useState<Case[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
@@ -72,14 +72,14 @@ const ContactsPage = () => {
   // Helper for icon size - matching Settings.tsx
   const iconSizeClass = isMobile ? "h-3.5 w-3.5" : "h-4 w-4";
 
-  // Load contacts and matters from IndexedDB on component mount
+  // Load contacts and cases from IndexedDB on component mount
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [loadedContacts, loadedMatters] = await Promise.all([
+        const [loadedContacts, loadedCases] = await Promise.all([
           getAllItems('contacts'),
-          getAllItems('matters')
+          getAllItems('cases')
         ]);
 
         if (loadedContacts.length === 0) {
@@ -91,12 +91,12 @@ const ContactsPage = () => {
           setContacts(loadedContacts);
         }
 
-        setMatters(loadedMatters);
+        setCases(loadedCases);
         console.log("Contacts loaded from DB:", loadedContacts);
-        console.log("Matters loaded from DB:", loadedMatters);
+        console.log("Cases loaded from DB:", loadedCases);
       } catch (error) {
         console.error('Error loading data from IndexedDB:', error);
-        toast.error("Failed to load contacts or matters from local storage.");
+        toast.error("Failed to load contacts or cases from local storage.");
         setContacts(initialContacts);
       } finally {
         setIsLoading(false);
@@ -301,7 +301,7 @@ const ContactsPage = () => {
                                 <div className="flex-shrink-0">
                                   <EditContactDialog
                                     contact={contact as ContactFormValues}
-                                    availableCaseFileNumbers={matters.map(m => m.caseFileNumber)}
+                                    availableCaseFileNumbers={cases.map(m => m.caseFileNumber)}
                                     onUpdateContact={handleUpdateContact}
                                     onDelete={() => handleDeleteContact(contact.id)}
                                   />
@@ -330,11 +330,11 @@ const ContactsPage = () => {
                                     <div className="flex items-center space-x-1">
                                       <Briefcase className={`${isMobile ? "h-2.5 w-2.5" : "h-3 w-3"} flex-shrink-0`} />
                                       {contact.caseFileNumbers.map((cfNumber, index) => {
-                                        const matter = matters.find(m => m.caseFileNumber === cfNumber);
-                                        return matter ? (
+                                        const caseItem = cases.find(m => m.caseFileNumber === cfNumber);
+                                        return caseItem ? (
                                           <Link
-                                            key={matter.id || cfNumber}
-                                            to={`/case-files/${matter.id}`}
+                                            key={caseItem.id || cfNumber}
+                                            to={`/case-files/${caseItem.id}`}
                                             className={`text-blue-600 hover:underline ${isMobile ? "text-[0.65rem]" : "text-xs"}`}
                                             title={`View Case File ${cfNumber}`}
                                           >

@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 // Import other necessary components like Checkbox, Input etc. if needed for checklist items
 
-interface Matter {
+interface Case {
   id: string;
   title: string;
   status: string;
@@ -30,14 +30,14 @@ const checklistItems = [
 
 const ChecklistPage = () => {
   const { id: caseId } = useParams<{ id: string }>();
-  const [matter, setMatter] = useState<Matter | null>(null);
+  const [caseData, setCaseData] = useState<Case | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isMobile = useIsMobile();
   // Add state for checklist items if needed, e.g., const [items, setItems] = useState(checklistItems);
 
   useEffect(() => {
-    const loadMatter = async () => {
+    const loadCase = async () => {
       if (!caseId) {
         setError("No case ID provided.");
         setIsLoading(false);
@@ -46,25 +46,25 @@ const ChecklistPage = () => {
 
       setIsLoading(true);
       try {
-        const matterData = await getItem('matters', caseId);
-        if (matterData) {
-          setMatter(matterData);
+        const caseData = await getItem('cases', caseId);
+        if (caseData) {
+          setCaseData(caseData);
           setError(null);
           // Fetch checklist items specific to this caseId here
         } else {
           setError("Case not found.");
-          setMatter(null);
+          setCaseData(null);
         }
       } catch (e) {
-        console.error("Error loading matter data:", e);
+        console.error("Error loading case data:", e);
         setError("Failed to load case data.");
-        setMatter(null);
+        setCaseData(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadMatter();
+    loadCase();
   }, [caseId]);
 
   // Add functions to handle checklist item changes (toggle completion, add new item, etc.)
@@ -84,7 +84,7 @@ const ChecklistPage = () => {
     return <Layout><div className="p-4 md:p-6">Loading checklist...</div></Layout>;
   }
 
-  if (error || !matter) {
+  if (error || !caseData) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-full p-4 md:p-6">
@@ -115,7 +115,7 @@ const ChecklistPage = () => {
             <div>
               <h1 className={`${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-tight`}>Checklist</h1>
               <div className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
-                {matter.title} • {matter.caseFileNumber || matter.id}
+                {caseData.title} • {caseData.caseFileNumber || caseData.id}
               </div>
             </div>
           </div>

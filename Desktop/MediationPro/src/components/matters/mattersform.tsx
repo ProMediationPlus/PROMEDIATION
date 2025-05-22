@@ -50,9 +50,9 @@ import {
   CollapsibleTrigger
 } from "@/components/ui/collapsible";
 
-// Define interface for Matter (Aligning with CaseDetail.tsx)
+// Define interface for Case (Aligning with CaseDetail.tsx)
 // Note: Ideally, this should be in a shared types file
-interface Matter {
+interface Case {
   id: string; // Changed to string to match URL param usage in parent
   title: string;
   type: string;
@@ -62,7 +62,7 @@ interface Matter {
   description: string;
   caseFileNumber: string;
   caseFileName: string;
-  // Add fields from CaseDetail's Matter type if needed within this component,
+  // Add fields from CaseDetail's Case type if needed within this component,
   // but primarily we care about intakeForm here.
   // participants?: string[];
   // documents?: any[]; // Use specific type if needed
@@ -184,14 +184,14 @@ const fullIntakeSchema = z.object({
   children: childrenSchema,
 });
 
-interface MatterDetailsProps {
-  matter: Matter;
-  onSave?: (updatedMatter: Matter) => void;
+interface CaseDetailsProps {
+  case: Case;
+  onSave?: (updatedCase: Case) => void;
 }
 
 import { getNotesForCase, getAllItems } from "@/services/localDbService";
 
-export function MatterDetails({ matter, onSave }: MatterDetailsProps) { // Restore onSave prop
+export function CaseDetails({ case: caseData, onSave }: CaseDetailsProps) { // Restore onSave prop
   const [checklist, setChecklist] = useState([
     { title: "Client Enquiry Form (F.2A)", description: "<p>Upload information directly to the contact’s form (Upgrade needed for auto-upload from a website).</p>", done: false },
     { title: "Meeting Log (F.6)", description: "<p>Attach to each case file; can also be downloaded for manual files.</p>", done: false },
@@ -236,17 +236,17 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) { // Resto
   // Initialize the form
   const form = useForm<z.infer<typeof fullIntakeSchema>>({
     resolver: zodResolver(fullIntakeSchema),
-    // Load default values from matter.intakeForm if it exists, otherwise use defaults
-    defaultValues: matter.intakeForm
-      ? { // If intakeForm data exists in the matter prop
-          ...matter.intakeForm, // Spread the saved data
+    // Load default values from case.intakeForm if it exists, otherwise use defaults
+    defaultValues: caseData.intakeForm
+      ? { // If intakeForm data exists in the case prop
+          ...caseData.intakeForm, // Spread the saved data
           // Ensure top-level fields are also correctly sourced or defaulted
-          caseFileNumber: matter.caseFileNumber || matter.intakeForm.caseFileNumber || "",
-          caseFileName: matter.caseFileName || matter.intakeForm.caseFileName || "",
+          caseFileNumber: caseData.caseFileNumber || caseData.intakeForm.caseFileNumber || "",
+          caseFileName: caseData.caseFileName || caseData.intakeForm.caseFileName || "",
         }
       : { // If no intakeForm data exists, provide the full default structure
-          caseFileNumber: matter.caseFileNumber || "",
-          caseFileName: matter.caseFileName || "",
+          caseFileNumber: caseData.caseFileNumber || "",
+          caseFileName: caseData.caseFileName || "",
           partyA: {
             name: "", address: "", phone: "", email: "", dateOfBirth: "", dateOfMarriage: "",
             placeOfMarriage: "", dateOfSeparation: "", previousMarriage: false, previousMarriageDetails: "",
@@ -275,18 +275,18 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) { // Resto
         },
   });
 
-  // Reset form when matter prop changes
+  // Reset form when case prop changes
   useEffect(() => {
-    form.reset(matter.intakeForm
-      ? { // If intakeForm data exists in the matter prop
-          ...matter.intakeForm, // Spread the saved data
+    form.reset(caseData.intakeForm
+      ? { // If intakeForm data exists in the case prop
+          ...caseData.intakeForm, // Spread the saved data
           // Ensure top-level fields are also correctly sourced or defaulted
-          caseFileNumber: matter.caseFileNumber || matter.intakeForm.caseFileNumber || "",
-          caseFileName: matter.caseFileName || matter.intakeForm.caseFileName || "",
+          caseFileNumber: caseData.caseFileNumber || caseData.intakeForm.caseFileNumber || "",
+          caseFileName: caseData.caseFileName || caseData.intakeForm.caseFileName || "",
         }
       : { // If no intakeForm data exists, provide the full default structure
-          caseFileNumber: matter.caseFileNumber || "",
-          caseFileName: matter.caseFileName || "",
+          caseFileNumber: caseData.caseFileNumber || "",
+          caseFileName: caseData.caseFileName || "",
           partyA: {
             name: "", address: "", phone: "", email: "", dateOfBirth: "", dateOfMarriage: "",
             placeOfMarriage: "", dateOfSeparation: "", previousMarriage: false, previousMarriageDetails: "",
@@ -314,7 +314,7 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) { // Resto
           }
         }
     );
-  }, [matter]);
+  }, [caseData]);
 
   // Function to add a child to the form
   const addChild = () => {
@@ -339,14 +339,14 @@ export function MatterDetails({ matter, onSave }: MatterDetailsProps) { // Resto
   function onSubmit(data: z.infer<typeof fullIntakeSchema>) {
     console.log("Submitting intake form data:", data); // Added log
     toast.success("Client intake form saved successfully");
-    // Update the matter with the intake form data
-    const updatedMatter = {
-      ...matter,
+    // Update the case with the intake form data
+    const updatedCase = {
+      ...caseData,
       intakeForm: data,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
     if (onSave) {
-      onSave(updatedMatter);
+      onSave(updatedCase);
     }
   }
 

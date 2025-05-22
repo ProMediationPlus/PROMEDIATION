@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAllItems } from "@/services/localDbService";
-import type { Matter } from "@/types/models";
+import type { Case } from "@/types/models";
 import { Layout } from "@/components/layout/layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -48,7 +48,7 @@ interface Document {
   name: string;
   type: string;
   size: string;
-  createdAt: string; // Changed from matter to caseFileNumber
+  createdAt: string; // Changed from case to caseFileNumber
   caseFileNumber: string;
   owner: string;
   parentId: number | null; // Added to link documents to folders
@@ -73,7 +73,7 @@ const initialDocuments: Document[] = [
     type: "pdf",
     size: "1.2 MB",
     createdAt: "2023-06-15",
-    caseFileNumber: "CF-2023-001", // Updated from matter
+    caseFileNumber: "CF-2023-001", // Updated from case
     owner: "John Smith",
     parentId: 6 // Inside "Case Files/Smith vs. Johnson/Agreements"
   },
@@ -83,7 +83,7 @@ const initialDocuments: Document[] = [
     type: "docx",
     size: "0.8 MB",
     createdAt: "2023-06-12",
-    caseFileNumber: "CF-2023-002", // Updated from matter
+    caseFileNumber: "CF-2023-002", // Updated from case
     owner: "Sarah Johnson",
     parentId: 5 // Inside "Case Files/Property Dispute"
   },
@@ -93,7 +93,7 @@ const initialDocuments: Document[] = [
     type: "pdf",
     size: "2.5 MB",
     createdAt: "2023-06-10",
-    caseFileNumber: "CF-2023-003", // Updated from matter
+    caseFileNumber: "CF-2023-003", // Updated from case
     owner: "Robert Brown",
     parentId: null // In root
   },
@@ -175,7 +175,7 @@ const initialFolders: Folder[] = [
 const DocumentsPage = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [folders, setFolders] = useState<Folder[]>(initialFolders); // Include Templates folder
-  const [matters, setMatters] = useState<Matter[]>([]);
+  const [cases, setCases] = useState<Case[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentFolder, setCurrentFolder] = useState<Folder | null>(null);
   const [isRenaming, setIsRenaming] = useState(false);
@@ -192,12 +192,12 @@ const DocumentsPage = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        let loadedMatters: Matter[] = [];
+        let loadedCases: Case[] = [];
         let loadedDocuments: Document[] = [];
 
         try {
-          [loadedMatters, loadedDocuments] = await Promise.all([
-            getAllItems('matters'),
+          [loadedCases, loadedDocuments] = await Promise.all([
+            getAllItems('cases'),
             getAllItems('documents'),
           ]);
         } catch (error) {
@@ -209,7 +209,7 @@ const DocumentsPage = () => {
           loadedDocuments = initialDocuments;
         }
 
-        setMatters(loadedMatters);
+        setCases(loadedCases);
         setDocuments(loadedDocuments);
       } catch (error) {
         console.error("Failed to load data", error);

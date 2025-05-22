@@ -17,7 +17,7 @@ import { EditInvoiceDialog } from "@/components/dialogs/edit-invoice-dialog";
 interface Invoice {
   id: string;
   clientName: string;
-  matter: string;
+  case: string;
   amount: number;
   status: "Draft" | "Unpaid" | "Paid";
   date: string;
@@ -37,7 +37,7 @@ const initialInvoices: Invoice[] = [
   {
     id: "INV-001",
     clientName: "John Smith",
-    matter: "Smith vs. Johnson",
+    case: "Smith vs. Johnson",
     amount: 2500.00,
     status: "Draft",
     date: "2023-06-15",
@@ -45,7 +45,7 @@ const initialInvoices: Invoice[] = [
   {
     id: "INV-002",
     clientName: "Sarah Johnson",
-    matter: "Property Dispute Resolution",
+    case: "Property Dispute Resolution",
     amount: 1800.00,
     status: "Unpaid",
     date: "2023-06-10",
@@ -53,7 +53,7 @@ const initialInvoices: Invoice[] = [
   {
     id: "INV-003",
     clientName: "Robert Brown",
-    matter: "Brown Employment Dispute",
+    case: "Brown Employment Dispute",
     amount: 3200.00,
     status: "Paid",
     date: "2023-05-28",

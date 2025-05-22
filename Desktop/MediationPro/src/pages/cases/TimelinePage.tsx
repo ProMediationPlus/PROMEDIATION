@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-interface Matter {
+interface Case {
   id: string;
   title: string;
   status: string;
@@ -80,7 +80,7 @@ const mockTimelineEvents = [
 
 const TimelinePage = () => {
   const { id: caseId } = useParams<{ id: string }>();
-  const [matter, setMatter] = useState<Matter | null>(null);
+  const [caseData, setCaseData] = useState<Case | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timelineEvents, setTimelineEvents] = useState(mockTimelineEvents);
@@ -94,7 +94,7 @@ const TimelinePage = () => {
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const loadMatter = async () => {
+    const loadCase = async () => {
       if (!caseId) {
         setError("No case ID provided.");
         setIsLoading(false);
@@ -103,24 +103,24 @@ const TimelinePage = () => {
       
       setIsLoading(true);
       try {
-        const matterData = await getItem('matters', caseId);
-        if (matterData) {
-          setMatter(matterData);
+        const caseData = await getItem('cases', caseId);
+        if (caseData) {
+          setCaseData(caseData);
           setError(null);
         } else {
           setError("Case not found.");
-          setMatter(null);
+          setCaseData(null);
         }
       } catch (e) {
-        console.error("Error loading matter data:", e);
+        console.error("Error loading case data:", e);
         setError("Failed to load case data.");
-        setMatter(null);
+        setCaseData(null);
       } finally {
         setIsLoading(false);
       }
     };
     
-    loadMatter();
+    loadCase();
   }, [caseId]);
 
   const handleAddEvent = () => {
@@ -182,7 +182,7 @@ const TimelinePage = () => {
     return <Layout><div className="p-4 md:p-6">Loading timeline...</div></Layout>;
   }
 
-  if (error || !matter) {
+  if (error || !caseData) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-full p-4 md:p-6">
@@ -212,7 +212,7 @@ const TimelinePage = () => {
             <div>
               <h1 className={`${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-tight`}>Timeline</h1>
               <div className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground`}>
-                {matter.title} • {matter.caseFileNumber || matter.id}
+                {caseData.title} • {caseData.caseFileNumber || caseData.id}
               </div>
             </div>
           </div>

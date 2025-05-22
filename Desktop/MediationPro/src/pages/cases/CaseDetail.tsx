@@ -30,13 +30,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { useParams, Link, useNavigate } from "react-router-dom"; // Added useNavigate
 import { toast } from "sonner";
-import { MatterDetails } from "@/components/matters/MatterDetails";
+import { CaseDetails } from "@/components/cases/CaseDetails";
 import { getItem, getItemsByIndex, putItem, getNotesForCase } from "@/services/localDbService"; // Import DB service functions
-import type { Matter as MatterType, CaseFileMetadata, Task, Note as NoteType } from "@/types/models"; // Import correct types
+import type { Case as CaseType, CaseFileMetadata, Task, Note as NoteType } from "@/types/models"; // Import correct types
 import { Folder, ChevronRight } from "lucide-react"; // Added Folder icon
 
 // Use imported types directly
-// Remove local interface definitions for Matter, Document, Task, MeetingNote, NextSession
+// Remove local interface definitions for Case, Document, Task, MeetingNote, NextSession
 
 // Remove mock data and localStorage helpers
 
@@ -59,7 +59,7 @@ const CaseDetailPage = () => {
   const { id: caseId } = useParams<{ id: string }>(); // Rename id to caseId for clarity
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
-  const [currentMatter, setCurrentMatter] = useState<MatterType | null>(null);
+  const [currentCase, setCurrentCase] = useState<CaseType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,9 +69,9 @@ const CaseDetailPage = () => {
   const [breadcrumbs, setBreadcrumbs] = useState<{ id: string | null; name: string }[]>([{ id: null, name: "Documents" }]);
   const [isLoadingFiles, setIsLoadingFiles] = useState(false);
 
-  // Fetch Matter details
+  // Fetch Case details
   useEffect(() => {
-    const loadMatter = async () => {
+    const loadCase = async () => {
       if (!caseId) {
         setError("No case ID provided.");
         setIsLoading(false);
@@ -79,23 +79,23 @@ const CaseDetailPage = () => {
       }
       setIsLoading(true);
       try {
-        const matter = await getItem('matters', caseId);
-        if (matter) {
-          setCurrentMatter(matter);
+        const caseData = await getItem('cases', caseId);
+        if (caseData) {
+          setCurrentCase(caseData);
           setError(null);
         } else {
           setError("Case not found.");
-          setCurrentMatter(null);
+          setCurrentCase(null);
         }
       } catch (e) {
-        console.error("Error loading matter data:", e);
+        console.error("Error loading case data:", e);
         setError("Failed to load case data.");
-        setCurrentMatter(null);
+        setCurrentCase(null);
       } finally {
         setIsLoading(false);
       }
     };
-    loadMatter();
+    loadCase();
   }, [caseId]);
 
   // Fetch files/folders for the current folder
@@ -129,20 +129,20 @@ const CaseDetailPage = () => {
   }, [caseId, currentFolderId]); // Re-fetch when caseId or currentFolderId changes
 
   // Updated save handler using localStorage
-  const handleSaveMatter = (updatedMatterData: Partial<MatterType>) => {
-    if (!caseId || !currentMatter) return;
+  const handleSaveCase = (updatedCaseData: Partial<CaseType>) => {
+    if (!caseId || !currentCase) return;
 
-    const matterToSave: MatterType = {
-      ...currentMatter, // Start with existing data
-      ...updatedMatterData, // Apply partial updates
+    const caseToSave: CaseType = {
+      ...currentCase, // Start with existing data
+      ...updatedCaseData, // Apply partial updates
       id: caseId, // Ensure ID is correct
       updatedAt: new Date(), // Update timestamp
     };
 
     // Save to localStorage
-    localStorage.setItem(`matter_${caseId}`, JSON.stringify(matterToSave));
+    localStorage.setItem(`case_${caseId}`, JSON.stringify(caseToSave));
 
-    setCurrentMatter(matterToSave); // Update local state
+    setCurrentCase(caseToSave); // Update local state
     toast.success("Client intake details saved successfully to local storage.");
   };
 
@@ -197,7 +197,7 @@ const CaseDetailPage = () => {
     return <Layout><div className="p-6">Loading case details...</div></Layout>;
   }
 
-  if (error || !currentMatter) {
+  if (error || !currentCase) {
     return (
       <Layout>
         <div className="flex flex-col items-center justify-center h-full p-6">
@@ -209,8 +209,8 @@ const CaseDetailPage = () => {
     );
   }
 
-  // Now use currentMatter for rendering
-  const caseDetails = currentMatter;
+  // Now use currentCase for rendering
+  const caseDetails = currentCase;
 
   return (
     <Layout>
@@ -224,7 +224,7 @@ const CaseDetailPage = () => {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{caseDetails.title}</h1>
             <div className="flex items-center text-sm text-muted-foreground">
-              {/* Removed caseDetails.type as it's not in the imported MatterType */}
+              {/* Removed caseDetails.type as it's not in the imported CaseType */}
               <span className="mr-2">•</span>
               <span>{caseDetails.status}</span>
                <span className="mr-2 ml-2">•</span> {/* Added separator */}
@@ -271,7 +271,7 @@ const CaseDetailPage = () => {
                   <h3 className="font-medium mb-1">Last Updated</h3>
                   <p className="text-sm text-muted-foreground flex items-center">
                     <Clock className="mr-1 h-4 w-4" />
-                    {/* Use updatedAt from the imported MatterType */}
+                    {/* Use updatedAt from the imported CaseType */}
                     {formatDate(caseDetails.updatedAt?.toISOString())}
                   </p>
                 </div>
@@ -280,24 +280,24 @@ const CaseDetailPage = () => {
                   <div className="text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <Users className="mr-1 h-4 w-4" />
-                      {/* Use parties from the imported MatterType */}
+                      {/* Use parties from the imported CaseType */}
                       <span>{caseDetails.parties?.length || 0} parties involved</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                      {/* Use parties from the imported MatterType */}
+                      {/* Use parties from the imported CaseType */}
                       {caseDetails.parties?.map((party, index) => (
                         <div key={index} className="flex items-center p-2 bg-muted rounded-md">
                           {party}
                         </div>
                       ))}
-                       {/* Use parties from the imported MatterType */}
+                       {/* Use parties from the imported CaseType */}
                        {(!caseDetails.parties || caseDetails.parties.length === 0) && (
                            <p>No parties listed.</p>
                        )}
                     </div>
                   </div>
                 </div>
-                {/* Removed Next Session section as it's not part of the core MatterType */}
+                {/* Removed Next Session section as it's not part of the core CaseType */}
                  {/* Removed Linked Contacts section as it relied on separate mock data */}
               </CardContent>
             </Card>
@@ -356,15 +356,15 @@ const CaseDetailPage = () => {
                         Client Intake Form
                     </CardTitle>
                     <CardDescription>
-                        Fill in or update the detailed intake information for this matter.
+                        Fill in or update the detailed intake information for this case.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {/* Render MatterDetails here, passing the loaded matter and save handler */}
-                    <MatterDetails
-                        // Ensure matter prop matches expected type in MatterDetails if needed
-                        matter={caseDetails as any} // Cast needed if MatterDetails expects slightly different shape
-                        onSave={handleSaveMatter} // No longer async, cast might not be needed depending on MatterDetails prop type
+                    {/* Render CaseDetails here, passing the loaded case and save handler */}
+                    <CaseDetails
+                        // Ensure case prop matches expected type in CaseDetails if needed
+                        case={caseDetails as any} // Cast needed if CaseDetails expects slightly different shape
+                        onSave={handleSaveCase} // No longer async, cast might not be needed depending on CaseDetails prop type
                     />
                 </CardContent>
              </Card>
@@ -494,4 +494,4 @@ export default CaseDetailPage;
 // TODO: Implement Add Item functionality (create folder/upload file)
 // TODO: Implement item actions (rename, delete, move)
 // TODO: Fetch and display Tasks and Meeting Notes from DB in their respective tabs
-// TODO: Update MatterDetails component to align with imported MatterType if necessary
+// TODO: Update CaseDetails component to align with imported CaseType if necessary
