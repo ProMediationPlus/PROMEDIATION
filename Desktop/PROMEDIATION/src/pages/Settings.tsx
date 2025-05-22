@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios'; // Added import for axios
 import {
   Upload,
   X,
@@ -19,6 +20,16 @@ import {
   Repeat // Added Icon
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+  initiateCalendlyAuth,
+  getCalendlyUserInfo,
+  getCalendlyEventTypes,
+  disconnectCalendly,
+  getStoredCalendlyAccessToken,
+  refreshCalendlyToken, // Added import
+} from '../services/calendlyService';
+import { CalendlyUserResource, CalendlyEventTypeResource } from '../types/calendlyTypes';
 
 const SettingsPage = () => {
   const [logo, setLogo] = useState<string | null>(null);
@@ -38,6 +49,185 @@ const SettingsPage = () => {
   const removeLogo = () => {
     setLogo(null);
   };
+
+  // Calendly specific state and handlers
+  const [calendlyUser, setCalendlyUser] = useState<CalendlyUserResource | null>(null);
+  const [eventTypes, setEventTypes] = useState<CalendlyEventTypeResource[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true); 
+  const [error, setError] = useState<string>('');
+  const [actionMessage, setActionMessage] = useState<string>('');
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Check for messages from CalendlyCallbackPage
+  useEffect(() => {
+    const locationState = location.state as { calendlySuccessMessage?: string; calendlyErrorMessage?: string } | null;
+    if (locationState?.calendlySuccessMessage) {
+      setActionMessage(locationState.calendlySuccessMessage);
+      fetchCalendlyStatus(); // Fetch data after successful connection
+      navigate(location.pathname, { replace: true, state: {} }); // Clear the state
+    } else if (locationState?.calendlyErrorMessage) {
+      setError(locationState.calendlyErrorMessage);
+      setActionMessage(''); // Clear any success message
+      navigate(location.pathname, { replace: true, state: {} }); // Clear the state
+    }
+  }, [location.state, location.pathname, navigate]);
+
+  // Fetch Calendly Status
+  const fetchCalendlyStatus = async () => {
+    setIsLoading(true);
+    setError('');
+    // setActionMessage('');
+
+    let token = getStoredCalendlyAccessToken();
+    if (!token) {
+      setCalendlyUser(null);
+      setEventTypes([]);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const userInfo = await getCalendlyUserInfo();
+      setCalendlyUser(userInfo);
+      if (userInfo && userInfo.uri) {
+        const eventTypesResponse = await getCalendlyEventTypes(userInfo.uri);
+        if (eventTypesResponse && typeof eventTypesResponse === 'object' && Array.isArray(eventTypesResponse.collection)) {
+          setEventTypes(eventTypesResponse.collection);
+        } else {
+          console.warn('getCalendlyEventTypes returned an unexpected response structure. Expected { collection: array }.', eventTypesResponse);
+          setError('Failed to parse Calendly event types. Displaying an empty list.');
+          setEventTypes([]); // Fallback to empty array
+        }
+      } else if (!userInfo) {
+        // If userInfo is null (e.g. token was invalid and cleared by getCalendlyUserInfo or initial load with no token)
+        setEventTypes([]);
+      } else {
+        // This case implies userInfo is truthy but userInfo.uri is not, which is unexpected for a valid user object.
+        console.warn('Calendly user info fetched but URI is missing.', userInfo);
+        setError('Could not fetch event types due to missing user URI.');
+        setEventTypes([]);
+      }
+    } catch (err: any) {
+      // Check if it\'s an auth error (401/403) that might be fixed by a refresh token
+      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+        console.log('Access token expired or invalid, attempting refresh...');
+        try {
+          const refreshed = await refreshCalendlyToken();
+          if (refreshed && refreshed.access_token) {
+            console.log('Token refreshed successfully, retrying fetchCalendlyStatus...');
+            const refreshedUserInfo = await getCalendlyUserInfo();
+            setCalendlyUser(refreshedUserInfo);
+            if (refreshedUserInfo && refreshedUserInfo.uri) {
+              const eventTypesResponse = await getCalendlyEventTypes(refreshedUserInfo.uri);
+              if (eventTypesResponse && typeof eventTypesResponse === 'object' && Array.isArray(eventTypesResponse.collection)) {
+                setEventTypes(eventTypesResponse.collection);
+              } else {
+                console.warn('getCalendlyEventTypes (after refresh) returned an unexpected response structure. Expected { collection: array }.', eventTypesResponse);
+                setError('Failed to parse Calendly event types after token refresh. Displaying an empty list.');
+                setEventTypes([]); // Fallback to empty array
+              }
+            } else if (!refreshedUserInfo) {
+                // If refreshedUserInfo is null after attempting refresh
+                setEventTypes([]);
+            } else {
+                // This case implies refreshedUserInfo is truthy but refreshedUserInfo.uri is not
+                console.warn('Refreshed Calendly user info fetched but URI is missing.', refreshedUserInfo);
+                setError('Could not fetch event types after refresh due to missing user URI.');
+                setEventTypes([]);
+            }
+            setError(''); // Clear previous auth error
+          } else {
+            setError('Calendly session expired. Please reconnect.');
+            setCalendlyUser(null);
+            setEventTypes([]);
+            localStorage.removeItem('calendly_access_token');
+            localStorage.removeItem('calendly_refresh_token');
+          }
+        } catch (refreshError: any) {
+          console.error('Failed to refresh Calendly token:', refreshError);
+          setError('Calendly session expired. Please reconnect.');
+          setCalendlyUser(null);
+          setEventTypes([]);
+          localStorage.removeItem('calendly_access_token');
+          localStorage.removeItem('calendly_refresh_token');
+        }
+      } else if (err && err.error) { // This is for CalendlyError from our service (e.g., { error: "message" })
+        setError(err.error);
+        setCalendlyUser(null);
+        setEventTypes([]);
+      } else {
+        // More detailed logging for unexpected errors
+        let detailedErrorMessage = 'Failed to fetch Calendly status. Please try again.';
+        if (axios.isAxiosError(err)) { // Check if it's an Axios error
+          if (err.response) {
+            // Error response from backend
+            detailedErrorMessage = `Backend error: ${err.response.status} - ${JSON.stringify(err.response.data)}. Please check server logs.`;
+          } else if (err.request) {
+            // Request was made but no response received
+            detailedErrorMessage = 'No response received from backend. Is the server running and accessible?';
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            detailedErrorMessage = `Axios error: ${err.message}.`;
+          }
+        } else if (err instanceof Error) { // Generic JavaScript error
+          detailedErrorMessage = `Unexpected error: ${err.message}.`;
+        }
+        setError(detailedErrorMessage);
+        setCalendlyUser(null);
+        setEventTypes([]);
+        console.error("Full error object in fetchCalendlyStatus:", err); // Log the full error object
+      }
+      console.info("Could not fetch Calendly status (raw error):", err); // Keep existing log
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // useEffect to fetch status on mount
+  useEffect(() => {
+    fetchCalendlyStatus();
+  }, []);
+
+  // Handle Connect Calendly
+  const handleConnectCalendly = () => {
+    setError('');
+    setActionMessage('');
+    initiateCalendlyAuth();
+  };
+
+  // Handle Disconnect Calendly
+  const handleDisconnectCalendly = async () => {
+    setIsLoading(true);
+    setError('');
+    // setActionMessage(''); // Optional: Clear previous action messages
+    try {
+      const response = await disconnectCalendly(); // Service clears tokens from localStorage
+      setActionMessage(response.message || 'Successfully disconnected from Calendly.');
+      setCalendlyUser(null);
+      setEventTypes([]);
+    } catch (err: any) {
+      setError(err.error || 'Failed to disconnect from Calendly. Tokens have been cleared locally.');
+      // Even if disconnect fails on server, tokens are cleared by service, so UI reflects disconnected state.
+      setCalendlyUser(null);
+      setEventTypes([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // useEffect to clear messages after a delay
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (actionMessage || error) {
+      timer = setTimeout(() => {
+        setActionMessage('');
+        // setError(''); // Decide if errors should also auto-clear, or persist until next action
+      }, 7000);
+    }
+    return () => clearTimeout(timer);
+  }, [actionMessage, error]);
 
   // Helper for icon size
   const iconSizeClass = isMobile ? "h-3.5 w-3.5" : "h-4 w-4";
@@ -75,17 +265,6 @@ const SettingsPage = () => {
               `}
             >
               <UserCircle className={iconSizeClass} /> Profile
-            </TabsTrigger>
-            <TabsTrigger
-              value="account"
-              className={`
-                flex items-center justify-center gap-1.5
-                ${isMobile ? 'text-xs px-2 py-1.5' : 'text-sm px-3 py-1.5'}
-                rounded-md
-                data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm
-              `}
-            >
-              <SettingsIcon className={iconSizeClass} /> Account
             </TabsTrigger>
             <TabsTrigger
               value="branding"
@@ -130,6 +309,17 @@ const SettingsPage = () => {
               `}
             >
               <Repeat className={iconSizeClass} /> {isMobile ? "Subs" : "Subscriptions"}
+            </TabsTrigger>
+            <TabsTrigger
+              value="integrations"
+              className={`
+                flex items-center justify-center gap-1.5
+                ${isMobile ? 'text-xs px-2 py-1.5' : 'text-sm px-3 py-1.5'}
+                rounded-md
+                data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm
+              `}
+            >
+              <SettingsIcon className={iconSizeClass} /> Integrations
             </TabsTrigger>
           </TabsList>
           {/* === END MODIFIED TabsList === */}
@@ -208,11 +398,7 @@ const SettingsPage = () => {
                   <Button size={isMobile ? "sm" : "default"}>Save Changes</Button>
                 </CardContent>
               </Card>
-            </TabsContent>
-
-            <TabsContent value="account" className="mt-0 space-y-1.5"> {/* Reduced space-y */}
-              {/* ... Account Content ... */}
-               <Card>
+              <Card>
                 <CardHeader className={isMobile ? "p-4" : ""}>
                   <CardTitle className={isMobile ? "text-base" : ""}>Account Settings</CardTitle>
                   <CardDescription>Update your account preferences</CardDescription>
@@ -233,6 +419,80 @@ const SettingsPage = () => {
                   <Button size={isMobile ? "sm" : "default"}>Update Password</Button>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="integrations" className="mt-0 space-y-1.5"> {/* Reduced space-y */}
+              {/* START CALENDLY INTEGRATION UI */}
+              <Card> {/* Wrap in a Card for consistency */}
+                <CardHeader className={isMobile ? "p-4" : ""}>
+                  <CardTitle className={isMobile ? "text-base" : ""}>Calendly Integration</CardTitle>
+                  <CardDescription>Connect your Calendly account to manage your schedule.</CardDescription>
+                </CardHeader>
+                <CardContent className={`space-y-3 ${isMobile ? "p-4 pt-0" : ""}`}> {/* Adjusted space */}
+                  {actionMessage && <p className="text-sm text-green-600 mb-2">{actionMessage}</p>}
+                  {error && <p className="text-sm text-red-600 mb-2">Error: {error}</p>}
+
+                  {isLoading && <p className="text-sm text-muted-foreground">Loading Calendly status...</p>}
+
+                  {!isLoading && !calendlyUser && (
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-3">Connect your Calendly account to manage your schedule directly from this app.</p>
+                      <Button onClick={handleConnectCalendly} size={isMobile ? "sm" : "default"}> {/* CORRECTED: Use existing Button and size prop */}
+                        Connect to Calendly
+                      </Button>
+                    </div>
+                  )}
+
+                  {!isLoading && calendlyUser && (
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-3">
+                        {calendlyUser.avatar_url && (
+                          <img
+                            src={calendlyUser.avatar_url}
+                            alt="Calendly Avatar"
+                            className="h-10 w-10 rounded-full"
+                          />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium">Connected as: {calendlyUser.name}</p>
+                          <p className="text-xs text-muted-foreground">{calendlyUser.email}</p>
+                        </div>
+                      </div>
+                      <p className="text-sm">
+                        Your Calendly Scheduling URL:{' '}
+                        <a href={calendlyUser.scheduling_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                          {calendlyUser.scheduling_url}
+                        </a>
+                      </p>
+
+                      <h4 className={`${isMobile ? "text-sm" : "text-base"} font-medium mt-2`}>Your Event Types:</h4> {/* Adjusted heading size */}
+                      {eventTypes.length > 0 ? (
+                        <ul className="list-none p-0 space-y-2">
+                          {eventTypes.map(eventType => (
+                            <li key={eventType.uri} className="p-3 border rounded-md bg-muted/50">
+                              <p className="font-semibold text-sm">{eventType.name} <span className={`text-xs ${eventType.active ? 'text-green-600' : 'text-red-600'}`}>({eventType.active ? 'Active' : 'Inactive'})</span> - {eventType.duration} mins</p>
+                              <a href={eventType.scheduling_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline">
+                                Booking Link
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No event types found or you might need to refresh.</p>
+                      )}
+                      <div className="flex space-x-2 pt-2">
+                        <Button onClick={handleDisconnectCalendly} variant="destructive" size={isMobile ? "sm" : "default"}> {/* CORRECTED: Use existing Button, variant, and size prop */}
+                          Disconnect Calendly
+                        </Button>
+                        <Button onClick={fetchCalendlyStatus} variant="secondary" size={isMobile ? "sm" : "default"}> {/* CORRECTED: Use existing Button, variant, and size prop */}
+                          Refresh Data
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+              {/* END CALENDLY INTEGRATION UI */}
             </TabsContent>
 
             <TabsContent value="branding" className="mt-0 space-y-1.5"> {/* Reduced space-y */}

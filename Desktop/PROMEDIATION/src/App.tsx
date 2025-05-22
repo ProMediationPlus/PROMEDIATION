@@ -32,6 +32,7 @@ import { MediationAgreementBuilder } from "./pages/agreements/MediationAgreement
 import { ParentingAgreementBuilder } from "./pages/agreements/ParentingAgreement";
 import { SeparationAgreementBuilder } from "./pages/agreements/SeperationAgreement";
 import NotFound from "./pages/NotFound";
+import CalendlyCallbackPage from "./pages/CalendlyCallbackPage"; // Added import
 
 // Admin section imports
 import AdminLayout from "./components/layout/admin/AdminLayout";
@@ -95,6 +96,7 @@ const App = () => (
           <Route path="/mediation-template" element={<MediationAgreementBuilder />} /> {/* Add route for MediationAgreementBuilder */}
           <Route path="/parenting-template" element={<ParentingAgreementBuilder />} /> {/* Add route for ParentingAgreementBuilder */}
           <Route path="/separation-template" element={<SeparationAgreementBuilder />} /> {/* Add route for SeparationAgreementBuilder */}
+          <Route path="/calendly/callback" element={<CalendlyCallbackPage />} /> {/* Added Calendly callback route */}
           
           {/* Admin routes with AdminLayout */}
           <Route path="/admin" element={<AdminLayout />}>

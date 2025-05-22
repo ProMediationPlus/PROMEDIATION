@@ -2,25 +2,26 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2023"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-
-    /* Linting */
+    "module": "NodeNext", // For modern Node.js ESM output
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist-server", // Output directory for compiled JS
+    "rootDir": ".", // Include server.ts from the root
+    "esModuleInterop": true, // Ensures CJS modules can be imported with default imports
+    "allowSyntheticDefaultImports": true, // Often used with esModuleInterop
     "strict": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true,
-    
-    /* Node.js support */
-    "esModuleInterop": true,
-    "resolveJsonModule": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "declaration": true, // Optional: emit .d.ts files
+    "sourceMap": true // Optional: emit source maps for debugging
   },
-  "include": ["vite.config.ts", "server.ts"]
+  "include": [
+    "server.ts",
+    "src/api/calendlyAuthRoutes.ts",
+    "src/api/calendlyApiRoutes.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/api/chat.ts",
+    "src/api/chat/route.ts"
+  ]
 }
