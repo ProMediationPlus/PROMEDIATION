@@ -10,168 +10,158 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-// Mock data for guide chapters and sections
+// Data for "Mediate for Success" guide
 const guideContent = {
-  title: "Getting Started with Mediation: A Comprehensive Guide for Divorce and Separation in Ireland",
-  description: "A complete guide for understanding and practicing family mediation in Ireland",
-  chaptersCount: 10,
-  completedChapters: 2,
-  totalSections: 30,
-  completedSections: 6,
+  title: "Mediate for Success",
+  description: "Success in the dynamic field of mediation requires a blend of foundational principles and continuous adaptation. This guide offers a framework for mediation professionals to build a thriving practise, drawing on established best practises and current trends.",
+  chaptersCount: 8,
+  completedChapters: 0,
+  totalSections: 8, // Each chapter has 1 section
+  completedSections: 0,
   chapters: [
     {
       id: "chapter1",
-      title: "Introduction to Family Mediation in Ireland",
-      description: "Understanding family mediation in the Irish context",
-      completed: true,
+      title: "Forge Your Professional Identity and Niche",
+      description: "Defining your professional vision and specialization.",
+      completed: false,
       sections: [
-        { id: "c1s1", title: "What is Family Mediation in Ireland?", completed: true, duration: "5 min read" },
-        { id: "c1s2", title: "The Irish Context", completed: true, duration: "7 min read" },
-        { id: "c1s3", title: "Benefits of Family Mediation in Ireland", completed: true, duration: "6 min read" },
+        { id: "c1s1", title: "Forge Your Professional Identity and Niche", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter2",
-      title: "Irish Mediation Regulatory Framework",
-      description: "Understanding the legal foundation for mediation practice in Ireland",
-      completed: true,
+      title: "Cultivate and Refine Your Core Competencies",
+      description: "Ongoing self-assessment and professional development.",
+      completed: false,
       sections: [
-        { id: "c2s1", title: "The Mediation Act 2017", completed: true, duration: "10 min read" },
-        { id: "c2s2", title: "Professional Standards and Accreditation", completed: true, duration: "8 min read" },
-        { id: "c2s3", title: "Family Law in Ireland", completed: true, duration: "12 min read" },
+        { id: "c2s1", title: "Cultivate and Refine Your Core Competencies", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter3",
-      title: "Core Mediation Principles and Ethics",
-      description: "Essential principles and ethical standards for family mediation",
+      title: "Uphold the Highest Professional and Ethical Standards",
+      description: "Adhering to codes of conduct and ethical guidelines.",
       completed: false,
       sections: [
-        { id: "c3s1", title: "Fundamental Principles", completed: false, duration: "8 min read" },
-        { id: "c3s2", title: "Ethical Standards for Irish Family Mediators", completed: false, duration: "10 min read" },
+        { id: "c3s1", title: "Uphold the Highest Professional and Ethical Standards", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter4",
-      title: "Essential Skills for Family Mediators",
-      description: "Key skills required for effective family mediation",
+      title: "Project Professionalism in Every Interaction",
+      description: "Maintaining a professional appearance and communication style.",
       completed: false,
       sections: [
-        { id: "c4s1", title: "Communication Skills", completed: false, duration: "9 min read" },
-        { id: "c4s2", title: "Emotional Intelligence", completed: false, duration: "7 min read" },
-        { id: "c4s3", title: "Negotiation and Problem-Solving", completed: false, duration: "8 min read" },
+        { id: "c4s1", title: "Project Professionalism in Every Interaction", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter5",
-      title: "Pre-Mediation Preparation",
-      description: "Preparing for effective mediation sessions",
+      title: "Strategically Leverage Technology for Practise Efficiency",
+      description: "Utilizing tools for case management and communication.",
       completed: false,
       sections: [
-        { id: "c5s1", title: "Initial Contact and Screening", completed: false, duration: "8 min read" },
-        { id: "c5s2", title: "Information Gathering", completed: false, duration: "7 min read" },
-        { id: "c5s3", title: "Session Planning", completed: false, duration: "6 min read" },
+        { id: "c5s1", title: "Strategically Leverage Technology for Practise Efficiency", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter6",
-      title: "The Mediation Process: Step by Step",
-      description: "A detailed walkthrough of the mediation process",
+      title: "Commit to Lifelong Learning and Adaptation",
+      description: "Staying updated with advancements in the mediation field.",
       completed: false,
       sections: [
-        { id: "c6s1", title: "Opening the Session", completed: false, duration: "8 min read" },
-        { id: "c6s2", title: "Issue Identification", completed: false, duration: "7 min read" },
-        { id: "c6s3", title: "Exploration and Negotiation", completed: false, duration: "10 min read" },
-        { id: "c6s4", title: "Reaching and Documenting Agreement", completed: false, duration: "9 min read" },
+        { id: "c6s1", title: "Commit to Lifelong Learning and Adaptation", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter7",
-      title: "Legal Considerations in Irish Family Mediation",
-      description: "Understanding the legal aspects of family mediation in Ireland",
+      title: "Build and Nurture a Professional Network",
+      description: "Connecting with peers for support and collaboration.",
       completed: false,
       sections: [
-        { id: "c7s1", title: "Separation Agreements", completed: false, duration: "10 min read" },
-        { id: "c7s2", title: "Divorce Considerations", completed: false, duration: "11 min read" },
-        { id: "c7s3", title: "Child-Related Legal Frameworks", completed: false, duration: "9 min read" },
+        { id: "c7s1", title: "Build and Nurture a Professional Network", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter8",
-      title: "Documentation and Court Requirements",
-      description: "Essential documentation for effective mediation",
+      title: "Champion a Client-Centred and Empathetic Approach",
+      description: "Focusing on client needs and fostering open dialogue.",
       completed: false,
       sections: [
-        { id: "c8s1", title: "Mediation Documentation", completed: false, duration: "8 min read" },
-        { id: "c8s2", title: "Mediated Agreement Drafting", completed: false, duration: "10 min read" },
-        { id: "c8s3", title: "Court Interaction", completed: false, duration: "9 min read" },
-      ]
-    },
-    {
-      id: "chapter9",
-      title: "Building Your Family Mediation Practice",
-      description: "Establishing and growing a successful mediation service",
-      completed: false,
-      sections: [
-        { id: "c9s1", title: "Practice Development", completed: false, duration: "9 min read" },
-        { id: "c9s2", title: "Marketing and Client Acquisition", completed: false, duration: "8 min read" },
-        { id: "c9s3", title: "Professional Development", completed: false, duration: "7 min read" },
-      ]
-    },
-    {
-      id: "chapter10",
-      title: "Resources and Continuing Education",
-      description: "Ongoing learning and professional development",
-      completed: false,
-      sections: [
-        { id: "c10s1", title: "Professional Resources", completed: false, duration: "6 min read" },
-        { id: "c10s2", title: "Training Opportunities", completed: false, duration: "7 min read" },
-        { id: "c10s3", title: "Community of Practice", completed: false, duration: "5 min read" },
+        { id: "c8s1", title: "Champion a Client-Centred and Empathetic Approach", completed: false, duration: "5 min read" },
       ]
     }
   ]
-}
+};
 
 // Chapter content for display when a section is selected
 const chapterContent: Record<string, { title: string; content: string }> = {
   "c1s1": {
-    title: "What is Family Mediation in Ireland?",
-    content: "Family mediation in Ireland is a voluntary process where separating or divorcing couples work with a qualified mediator to reach agreements on matters such as child custody, financial support, and property division. The process provides an alternative to adversarial court proceedings, allowing couples to maintain control over decisions affecting their family's future while adhering to Irish family law requirements."
-  },
-  "c1s2": {
-    title: "The Irish Context",
-    content: "The Mediation Act 2017 formalised mediation practices in Ireland, encouraging parties to consider mediation before proceeding to court. In family law cases, solicitors are required to provide information about mediation services to clients contemplating separation or divorce proceedings."
-  },
-  "c1s3": {
-    title: "Benefits of Family Mediation in Ireland",
-    content: "Family mediation offers significant advantages for separating couples in Ireland:\n\n• Cost-Effective: Substantially less expensive than contested court proceedings\n• Time-Efficient: Can achieve resolution in weeks or months rather than years\n• Confidential: Discussions remain private, protecting family privacy\n• Child-Centred: Focuses on arrangements that prioritise children's wellbeing\n• Relationship Preservation: Maintains cooperative communication between parties\n• Compliance: Agreements reached through mediation typically have higher compliance rates"
+    title: "Forge Your Professional Identity and Niche",
+    content: "Defining your professional vision is the cornerstone of a successful mediation practise. Consider deeply the areas where your passion and skills intersect with market needs. Will you specialise in the sensitive terrain of family disputes, the complexities of workplace conflicts, or perhaps the intricate details of civil or commercial matters? Clearly identifying your target clientele and the specific services you will offer provides direction for your professional development, marketing efforts, and overall business strategy."
   },
   "c2s1": {
-    title: "The Mediation Act 2017",
-    content: "The Mediation Act 2017 is a key piece of legislation in Ireland that promotes mediation as an alternative dispute resolution mechanism. It requires solicitors to advise clients to consider mediation and provides a framework for the conduct of mediation."
+    title: "Cultivate and Refine Your Core Competencies",
+    content: "Ongoing self-assessment is not just recommended, it\'s essential. Regularly evaluate your strengths as a mediator and honestly identify areas that require further development. Actively pursue continuous professional development through accredited training programmes, specialised workshops, and relevant seminars. Programmes emphasising collaborative, facilitative, and interest-based approaches, including strategic use of joint sessions and caucuses, remain highly valuable."
   },
-  "c2s2": {
-    title: "Professional Standards and Accreditation",
-    content: "Mediators in Ireland are expected to adhere to high professional standards. Organizations like the Mediators' Institute of Ireland (MII) provide accreditation and codes of ethics for mediators, ensuring quality and consistency in practice."
+  "c3s1": {
+    title: "Uphold the Highest Professional and Ethical Standards",
+    content: "Mediation is a recognised and often legislated professional service. Presenting yourself as a competent, trustworthy, and ethical practitioner is non-negotiable. Adhere rigorously to established codes of conduct and ethical guidelines relevant to your jurisdiction and any professional bodies you are affiliated with. Maintaining strict confidentiality and unwavering impartiality in all aspects of your work builds trust and upholds the integrity of the mediation process. Regularly review and ensure your practises align with the standards set by relevant professional bodies."
   },
-  "c2s3": {
-    title: "Family Law in Ireland",
-    content: "A foundational understanding of Irish family law, including legislation related to divorce, separation, child custody, and financial settlements, is crucial for family mediators to guide parties effectively within the legal framework."
+  "c4s1": {
+    title: "Project Professionalism in Every Interaction",
+    content: "First impressions significantly impact the mediation environment. Your professional appearance and communication style contribute to establishing a neutral and respectful atmosphere. As noted in the original text, dress in a manner that conveys professionalism and neutrality, being mindful of cultural sensitivity and appropriateness for the specific mediation context. In all communications, whether verbal or written, use clear, concise, and respectful language. For formal client interactions and record-keeping, utilising structured professional emails is highly recommended."
   },
-  // Add other chapter content here...
+  "c5s1": {
+    title: "Strategically Leverage Technology for Practise Efficiency",
+    content: "Embracing technology is no longer optional but a necessity for a streamlined and effective mediation practise. Utilise specialised tools designed for ADR professionals to manage cases, schedule sessions, and ensure secure communication. Platforms offering features for online dispute resolution, digital document sharing, and secure video conferencing can significantly enhance efficiency, reduce administrative burdens, and improve the client experience like the one you are using now. Pro Mediation Plus."
+  },
+  "c6s1": {
+    title: "Commit to Lifelong Learning and Adaptation",
+    content: "The field of mediation is constantly evolving with new research, methodologies, and legal precedents. A commitment to continuous learning is vital to remain effective and relevant. Stay updated with the latest advancements in conflict resolution techniques, legal developments impacting mediation, and best practises in the field. Participate in advanced training programmes that offer opportunities for skill enhancement through interactive learning, simulation, and constructive feedback."
+  },
+  "c7s1": {
+    title: "Build and Nurture a Professional Network",
+    content: "Connecting with fellow professionals is invaluable for sharing experiences, gaining insights, seeking mentorship, and collaborating on best practises. Actively engage with professional associations, local mediation groups, and online communities. These networks provide access to resources, potential referral opportunities, and forums for discussing challenges and advancements in the field."
+  },
+  "c8s1": {
+    title: "Champion a Client-Centred and Empathetic Approach",
+    content: "At the heart of successful mediation is a genuine commitment to the clients\' needs, perspectives, and goals. Employ active listening techniques to truly understand the underlying interests of all parties. Practise empathy to build rapport and foster a safe space for open dialogue. Recognise the importance of nonverbal cues and strive to create a comfortable and conducive environment that encourages honest communication and collaborative problem-solving.\n\nBy diligently applying these principles and continuously seeking to improve, mediation professionals can enhance their effectiveness, uphold the highest standards of the profession, and make a meaningful difference in helping parties resolve conflict constructively."
+  }
 };
 
-const GuidesGettingStarted = () => {
+const GuidesMediateSuccess = () => {
   const isMobile = useIsMobile();
   const [activeChapter, setActiveChapter] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [progress, setProgress] = useState<number>(0);
+  const [currentGuideContent, setCurrentGuideContent] = useState(guideContent);
+  const [selectedSectionContent, setSelectedSectionContent] = useState<{ title: string; content: string } | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(guideContent.chapters[0]?.sections[0]?.id || null);
 
   useEffect(() => {
     // Calculate progress based on completed sections
     const totalProgress = (guideContent.completedSections / guideContent.totalSections) * 100;
     setProgress(totalProgress);
   }, []);
+
+  useEffect(() => {
+    // Logic to load initial section content or handle updates
+    if (activeSection && chapterContent[activeSection]) {
+      setSelectedSectionContent(chapterContent[activeSection]);
+    } else if (guideContent.chapters.length > 0 && guideContent.chapters[0].sections.length > 0) {
+      // Fallback to the first section of the first chapter if activeSection is not found
+      const firstChapter = guideContent.chapters[0];
+      const firstSectionId = firstChapter.sections[0].id;
+      if (chapterContent[firstSectionId]) {
+        setSelectedSectionContent(chapterContent[firstSectionId]);
+        setActiveChapter(firstChapter.id);
+        setActiveSection(firstSectionId);
+      }
+    } else {
+        setSelectedSectionContent(null);
+    }
+  }, [activeSection]);
 
   const markCompleted = (sectionId: string) => {
     // In a real implementation, this would update a database
@@ -241,6 +231,43 @@ const GuidesGettingStarted = () => {
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
+  };
+
+  const handleSectionSelect = (chapterId: string, sectionId: string) => {
+    setActiveChapter(chapterId);
+    setActiveSection(sectionId);
+    setSelectedSectionContent(chapterContent[sectionId]);
+  };
+
+  // Placeholder for progress update logic
+  const handleMarkComplete = (sectionId: string) => {
+    console.log(`Marking section ${sectionId} as complete`);
+    // This is where you would update the completion status in currentGuideContent
+    // For example, find the chapter and section, mark as complete, update progress counts
+    // Then, setCurrentGuideContent with the new state
+    // This is a simplified example:
+    const newGuideContent = { ...currentGuideContent };
+    let updated = false;
+    for (const chapter of newGuideContent.chapters) {
+      for (const section of chapter.sections) {
+        if (section.id === sectionId && !section.completed) {
+          section.completed = true;
+          newGuideContent.completedSections += 1;
+          // Check if chapter is complete
+          const chapterSections = newGuideContent.chapters.find(c => c.id === chapter.id)?.sections;
+          if (chapterSections?.every(s => s.completed)) {
+            chapter.completed = true;
+            newGuideContent.completedChapters +=1;
+          }
+          updated = true;
+          break;
+        }
+      }
+      if (updated) break;
+    }
+    if (updated) {
+      setCurrentGuideContent(newGuideContent);
+    }
   };
 
   return (
@@ -449,4 +476,4 @@ const GuidesGettingStarted = () => {
   );
 };
 
-export default GuidesGettingStarted;
+export default GuidesMediateSuccess;

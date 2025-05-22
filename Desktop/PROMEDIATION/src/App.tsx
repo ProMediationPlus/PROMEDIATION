@@ -28,11 +28,13 @@ import ReportsPage from "./pages/Reports";
 import SettingsPage from "./pages/Settings";
 import GuidesPage from "./pages/guides/GuidesPage";
 import GuidesGettingStarted from "./pages/guides/GuidesGettingStarted";
+import GuidesBusinessSetUp from "./pages/guides/GuidesBusinessSetUp";
+import GuidesMediateSuccess from "./pages/guides/GuidesMediateSuccess"; // Import the new guide component
+import GuidesGrowYourBusiness from "./pages/guides/GuidesGrowYourBusiness"; // Import the Grow Your Business guide component
 import { MediationAgreementBuilder } from "./pages/agreements/MediationAgreement";
 import { ParentingAgreementBuilder } from "./pages/agreements/ParentingAgreement";
 import { SeparationAgreementBuilder } from "./pages/agreements/SeperationAgreement";
 import NotFound from "./pages/NotFound";
-import CalendlyCallbackPage from "./pages/CalendlyCallbackPage"; // Added import
 
 // Admin section imports
 import AdminLayout from "./components/layout/admin/AdminLayout";
@@ -93,10 +95,12 @@ const App = () => (
           <Route path="/activities" element={<GuidesPage />} /> {/* Placeholder for Activities page */}
           <Route path="/guides" element={<GuidesPage />} /> {/* Add route for GuidesPage */}
           <Route path="/guides/getting-started" element={<GuidesGettingStarted />} /> {/* Add route for GuidesGettingStarted */}
+          <Route path="/guides/business-set-up" element={<GuidesBusinessSetUp />} /> {/* Add route for GuidesBusinessSetUp */}
+          <Route path="/guides/mediate-success" element={<GuidesMediateSuccess />} /> {/* Corrected route path */}
+          <Route path="/guides/grow-your-business" element={<GuidesGrowYourBusiness />} /> {/* Add route for Grow Your Business */}
           <Route path="/mediation-template" element={<MediationAgreementBuilder />} /> {/* Add route for MediationAgreementBuilder */}
           <Route path="/parenting-template" element={<ParentingAgreementBuilder />} /> {/* Add route for ParentingAgreementBuilder */}
           <Route path="/separation-template" element={<SeparationAgreementBuilder />} /> {/* Add route for SeparationAgreementBuilder */}
-          <Route path="/calendly/callback" element={<CalendlyCallbackPage />} /> {/* Added Calendly callback route */}
           
           {/* Admin routes with AdminLayout */}
           <Route path="/admin" element={<AdminLayout />}>

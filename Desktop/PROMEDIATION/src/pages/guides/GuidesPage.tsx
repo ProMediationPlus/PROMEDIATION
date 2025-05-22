@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
+import { paths } from "@/routes/paths"; // Import paths
 
 // Mock data for guides
 const guides = [
@@ -23,43 +24,33 @@ const guides = [
   },
   {
     id: 2,
-    title: "Conflict Resolution Techniques",
-    category: "techniques",
-    description: "Advanced strategies for resolving difficult conflicts and reaching agreements.",
+    title: "Business Set Up Guide", // Changed title
+    category: "techniques", // This can be updated if a new category is more appropriate
+    description: "A comprehensive guide to setting up your mediation business, from legal requirements to marketing.", // Changed description
     type: "Guide",
-    lastUpdated: "2025-04-01"
+    lastUpdated: "2025-05-22", // Updated lastUpdated date
+    path: paths.guidesBusinessSetUp // Use paths constant
   },
   {
     id: 3,
-    title: "Family Mediation Best Practices",
-    category: "specialization",
-    description: "Specialized approaches for mediating family disputes and custody arrangements.",
+    title: "Growing Your Mediation Business",
+    category: "Business Development", // New or existing category
+    description: "Strategies for Expansion and Sustainability.",
     type: "Guide", 
-    lastUpdated: "2025-03-25"
+    lastUpdated: "2025-05-22", // Today's date
+    path: paths.guidesGrowYourBusiness // Use the new path constant
   },
   {
-    id: 4,
-    title: "Commercial Dispute Resolution",
-    category: "specialization",
-    description: "Techniques for mediating business and commercial conflicts effectively.",
-    type: "Guide",
-    lastUpdated: "2025-02-15"
-  },
-  {
-    id: 5,
-    title: "Client Intake Checklist",
-    category: "checklists",
-    description: "Comprehensive checklist for gathering all necessary information during client intake.",
-    type: "Checklist",
-    lastUpdated: "2025-03-05"
-  },
-  {
-    id: 6,
-    title: "Mediation Ethics Handbook",
-    category: "basics",
-    description: "Complete guide to ethical considerations and standards in mediation practice.",
-    type: "Handbook",
-    lastUpdated: "2025-01-20"
+    id: 7,
+    title: 'Mediate for Success',
+    description: 'A framework for mediation professionals to build a thriving practise.',
+    imageUrl: '/static/images/guides/mediate-success.jpg', // Placeholder image
+    lastUpdated: 'October 26, 2023',
+    path: paths.guidesMediateSuccess, // Use paths constant
+    category: 'Professional Development',
+    type: "Guide", // Added type property
+    readingTime: '45 min',
+    author: 'AI Assistant',
   }
 ];
 
@@ -122,6 +113,7 @@ const GuidesPage = () => {
       case "techniques": return "Mediation Techniques";
       case "agreements": return "Agreements"; // Renamed from Specialization
       case "checklists": return "Checklists & Templates";
+      case "Business Development": return "Business Development Guides"; // Added for the new category
       default: return "All Guides";
     }
   };
@@ -216,6 +208,19 @@ const GuidesPage = () => {
                   <FileText className={iconSizeClass} />
                   Checklists
                 </TabsTrigger>
+                {/* Added Business Development Tab */}
+                <TabsTrigger 
+                  value="Business Development" 
+                  className={`
+                    flex items-center justify-center gap-1.5
+                    ${isMobile ? 'text-xs px-2 py-1.5' : 'text-sm px-3 py-1.5'}
+                    rounded-md
+                    data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm
+                  `}
+                >
+                  <BookOpen className={iconSizeClass} /> {/* Or a more appropriate icon */}
+                  Business Dev
+                </TabsTrigger>
               </TabsList>
 
               {/* Title and Search Bar */}
@@ -233,21 +238,21 @@ const GuidesPage = () => {
               </div>
 
               {/* Tabs Content */}
-              {["all", "basics", "techniques", "agreements", "checklists"].map(tabValue => (
+              {["all", "basics", "techniques", "agreements", "checklists", "Business Development"].map(tabValue => (
                 <TabsContent key={tabValue} value={tabValue} className="m-0 pt-0">
                    <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 p-0 sm:p-4">
                       {filteredGuides.length > 0 ? (
                         filteredGuides.map((guide) => (
-                          guide.id === 1 ? (
+                          guide.path ? (
                             <Link to={guide.path} key={guide.id}>
-                              <Card className="overflow-hidden hover:border-primary/50 transition-colors">
+                              <Card className="overflow-hidden hover:border-primary/50 transition-colors h-full flex flex-col">
                                 <CardHeader className={`${isMobile ? "p-3" : "p-4"} bg-muted/50`}>
                                   <div className="flex items-start justify-between">
                                     <CardTitle className={`${isMobile ? "text-sm" : "text-base"}`}>{guide.title}</CardTitle>
                                     {getGuideBadge(guide.type)}
                                   </div>
                                 </CardHeader>
-                                <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
+                                <CardContent className={`${isMobile ? "p-3" : "p-4"} flex-grow flex flex-col justify-between`}>
                                   <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground line-clamp-2 mb-4`}>
                                     {guide.description}
                                   </p>
@@ -257,26 +262,25 @@ const GuidesPage = () => {
                                       <span>Updated {formatDate(guide.lastUpdated)}</span>
                                     </div>
                                     <div className="flex gap-1">
-                                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={(e) => { e.preventDefault(); alert('Download clicked for ' + guide.title); }}>
                                         <Download className="h-4 w-4" />
                                       </Button>
-                                      <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                                        <ArrowUpRight className="h-4 w-4" />
-                                      </Button>
+                                      {/* The Link component handles navigation, so this button might be redundant or serve a different purpose like opening in new tab if needed */}
+                                      <ArrowUpRight className="h-4 w-4 text-muted-foreground self-center" /> 
                                     </div>
                                   </div>
                                 </CardContent>
                               </Card>
                             </Link>
                           ) : (
-                            <Card key={guide.id} className="overflow-hidden hover:border-primary/50 transition-colors">
+                            <Card key={guide.id} className="overflow-hidden hover:border-primary/50 transition-colors h-full flex flex-col">
                               <CardHeader className={`${isMobile ? "p-3" : "p-4"} bg-muted/50`}>
                                 <div className="flex items-start justify-between">
                                   <CardTitle className={`${isMobile ? "text-sm" : "text-base"}`}>{guide.title}</CardTitle>
                                   {getGuideBadge(guide.type)}
                                 </div>
                               </CardHeader>
-                              <CardContent className={`${isMobile ? "p-3" : "p-4"}`}>
+                              <CardContent className={`${isMobile ? "p-3" : "p-4"} flex-grow flex flex-col justify-between`}>
                                 <p className={`${isMobile ? "text-xs" : "text-sm"} text-muted-foreground line-clamp-2 mb-4`}>
                                   {guide.description}
                                 </p>
@@ -286,12 +290,10 @@ const GuidesPage = () => {
                                     <span>Updated {formatDate(guide.lastUpdated)}</span>
                                   </div>
                                   <div className="flex gap-1">
-                                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => alert('Download clicked for ' + guide.title)}>
                                       <Download className="h-4 w-4" />
                                     </Button>
-                                    <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
-                                      <ArrowUpRight className="h-4 w-4" />
-                                    </Button>
+                                    {/* No path, so no link icon needed, or a disabled one */}
                                   </div>
                                 </div>
                               </CardContent>

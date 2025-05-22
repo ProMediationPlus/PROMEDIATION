@@ -10,168 +10,158 @@ import { Badge } from "@/components/ui/badge";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-// Mock data for guide chapters and sections
+// Data for "Growing Your Mediation Business" guide
 const guideContent = {
-  title: "Getting Started with Mediation: A Comprehensive Guide for Divorce and Separation in Ireland",
-  description: "A complete guide for understanding and practicing family mediation in Ireland",
-  chaptersCount: 10,
-  completedChapters: 2,
-  totalSections: 30,
-  completedSections: 6,
+  title: "Growing Your Mediation Business: Strategies for Expansion and Sustainability",
+  description: "Establishing a mediation practice is just the beginning. Sustainable growth requires proactive strategies to increase visibility, build a strong reputation, and ensure operational efficiency. This guide outlines key areas to focus on as you expand your mediation business.",
+  chaptersCount: 8,
+  completedChapters: 0,
+  totalSections: 8, // Each chapter has 1 section
+  completedSections: 0,
   chapters: [
     {
       id: "chapter1",
-      title: "Introduction to Family Mediation in Ireland",
-      description: "Understanding family mediation in the Irish context",
-      completed: true,
+      title: "Cultivate a Robust Network and Build Key Relationships",
+      description: "Networking is fundamental to growing a professional services business like mediation. It\\'s about building genuine connections, not just collecting business cards.",
+      completed: false,
       sections: [
-        { id: "c1s1", title: "What is Family Mediation in Ireland?", completed: true, duration: "5 min read" },
-        { id: "c1s2", title: "The Irish Context", completed: true, duration: "7 min read" },
-        { id: "c1s3", title: "Benefits of Family Mediation in Ireland", completed: true, duration: "6 min read" },
+        { id: "c1s1", title: "Cultivate a Robust Network and Build Key Relationships", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter2",
-      title: "Irish Mediation Regulatory Framework",
-      description: "Understanding the legal foundation for mediation practice in Ireland",
-      completed: true,
+      title: "Implement a Targeted Content Marketing Strategy",
+      description: "Content marketing helps you demonstrate your expertise, build trust, and attract your target audience by providing valuable information.",
+      completed: false,
       sections: [
-        { id: "c2s1", title: "The Mediation Act 2017", completed: true, duration: "10 min read" },
-        { id: "c2s2", title: "Professional Standards and Accreditation", completed: true, duration: "8 min read" },
-        { id: "c2s3", title: "Family Law in Ireland", completed: true, duration: "12 min read" },
+        { id: "c2s1", title: "Implement a Targeted Content Marketing Strategy", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter3",
-      title: "Core Mediation Principles and Ethics",
-      description: "Essential principles and ethical standards for family mediation",
+      title: "Deliver Engaging Presentations and Workshops",
+      description: "Offering presentations and workshops is an excellent way to raise awareness about mediation and showcase your skills and expertise.",
       completed: false,
       sections: [
-        { id: "c3s1", title: "Fundamental Principles", completed: false, duration: "8 min read" },
-        { id: "c3s2", title: "Ethical Standards for Irish Family Mediators", completed: false, duration: "10 min read" },
+        { id: "c3s1", title: "Deliver Engaging Presentations and Workshops", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter4",
-      title: "Essential Skills for Family Mediators",
-      description: "Key skills required for effective family mediation",
+      title: "Establish Clear Fees and Payment Procedures",
+      description: "Transparency around fees and payment is essential for a professional practice and helps manage client expectations.",
       completed: false,
       sections: [
-        { id: "c4s1", title: "Communication Skills", completed: false, duration: "9 min read" },
-        { id: "c4s2", title: "Emotional Intelligence", completed: false, duration: "7 min read" },
-        { id: "c4s3", title: "Negotiation and Problem-Solving", completed: false, duration: "8 min read" },
+        { id: "c4s1", title: "Establish Clear Fees and Payment Procedures", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter5",
-      title: "Pre-Mediation Preparation",
-      description: "Preparing for effective mediation sessions",
+      title: "Develop Standard Operating Procedures (SOPs)",
+      description: "Implementing SOPs brings efficiency, consistency, and professionalism to your practice as it grows.",
       completed: false,
       sections: [
-        { id: "c5s1", title: "Initial Contact and Screening", completed: false, duration: "8 min read" },
-        { id: "c5s2", title: "Information Gathering", completed: false, duration: "7 min read" },
-        { id: "c5s3", title: "Session Planning", completed: false, duration: "6 min read" },
+        { id: "c5s1", title: "Develop Standard Operating Procedures (SOPs)", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter6",
-      title: "The Mediation Process: Step by Step",
-      description: "A detailed walkthrough of the mediation process",
+      title: "Seek Mentorship and Professional Support",
+      description: "Navigating the challenges of growing a business is easier with guidance from experienced professionals.",
       completed: false,
       sections: [
-        { id: "c6s1", title: "Opening the Session", completed: false, duration: "8 min read" },
-        { id: "c6s2", title: "Issue Identification", completed: false, duration: "7 min read" },
-        { id: "c6s3", title: "Exploration and Negotiation", completed: false, duration: "10 min read" },
-        { id: "c6s4", title: "Reaching and Documenting Agreement", completed: false, duration: "9 min read" },
+        { id: "c6s1", title: "Seek Mentorship and Professional Support", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter7",
-      title: "Legal Considerations in Irish Family Mediation",
-      description: "Understanding the legal aspects of family mediation in Ireland",
+      title: "Continuously Evaluate and Adapt",
+      description: "The market and the legal landscape are constantly evolving. Regular evaluation ensures your practice remains relevant and successful.",
       completed: false,
       sections: [
-        { id: "c7s1", title: "Separation Agreements", completed: false, duration: "10 min read" },
-        { id: "c7s2", title: "Divorce Considerations", completed: false, duration: "11 min read" },
-        { id: "c7s3", title: "Child-Related Legal Frameworks", completed: false, duration: "9 min read" },
+        { id: "c7s1", title: "Continuously Evaluate and Adapt", completed: false, duration: "5 min read" },
       ]
     },
     {
       id: "chapter8",
-      title: "Documentation and Court Requirements",
-      description: "Essential documentation for effective mediation",
+      title: "Understand the Legal and Ethical Landscape in Ireland",
+      description: "Operating within the legal and ethical framework is paramount for maintaining credibility and protecting your practice.",
       completed: false,
       sections: [
-        { id: "c8s1", title: "Mediation Documentation", completed: false, duration: "8 min read" },
-        { id: "c8s2", title: "Mediated Agreement Drafting", completed: false, duration: "10 min read" },
-        { id: "c8s3", title: "Court Interaction", completed: false, duration: "9 min read" },
-      ]
-    },
-    {
-      id: "chapter9",
-      title: "Building Your Family Mediation Practice",
-      description: "Establishing and growing a successful mediation service",
-      completed: false,
-      sections: [
-        { id: "c9s1", title: "Practice Development", completed: false, duration: "9 min read" },
-        { id: "c9s2", title: "Marketing and Client Acquisition", completed: false, duration: "8 min read" },
-        { id: "c9s3", title: "Professional Development", completed: false, duration: "7 min read" },
-      ]
-    },
-    {
-      id: "chapter10",
-      title: "Resources and Continuing Education",
-      description: "Ongoing learning and professional development",
-      completed: false,
-      sections: [
-        { id: "c10s1", title: "Professional Resources", completed: false, duration: "6 min read" },
-        { id: "c10s2", title: "Training Opportunities", completed: false, duration: "7 min read" },
-        { id: "c10s3", title: "Community of Practice", completed: false, duration: "5 min read" },
+        { id: "c8s1", title: "Understand the Legal and Ethical Landscape in Ireland", completed: false, duration: "5 min read" },
       ]
     }
   ]
-}
+};
 
 // Chapter content for display when a section is selected
 const chapterContent: Record<string, { title: string; content: string }> = {
   "c1s1": {
-    title: "What is Family Mediation in Ireland?",
-    content: "Family mediation in Ireland is a voluntary process where separating or divorcing couples work with a qualified mediator to reach agreements on matters such as child custody, financial support, and property division. The process provides an alternative to adversarial court proceedings, allowing couples to maintain control over decisions affecting their family's future while adhering to Irish family law requirements."
-  },
-  "c1s2": {
-    title: "The Irish Context",
-    content: "The Mediation Act 2017 formalised mediation practices in Ireland, encouraging parties to consider mediation before proceeding to court. In family law cases, solicitors are required to provide information about mediation services to clients contemplating separation or divorce proceedings."
-  },
-  "c1s3": {
-    title: "Benefits of Family Mediation in Ireland",
-    content: "Family mediation offers significant advantages for separating couples in Ireland:\n\n• Cost-Effective: Substantially less expensive than contested court proceedings\n• Time-Efficient: Can achieve resolution in weeks or months rather than years\n• Confidential: Discussions remain private, protecting family privacy\n• Child-Centred: Focuses on arrangements that prioritise children's wellbeing\n• Relationship Preservation: Maintains cooperative communication between parties\n• Compliance: Agreements reached through mediation typically have higher compliance rates"
+    title: "Cultivate a Robust Network and Build Key Relationships",
+    content: "Networking is fundamental to growing a professional services business like mediation. It\\'s about building genuine connections, not just collecting business cards.\\n\\n• Join Professional Organisations: Becoming a member of relevant professional bodies, such as the Mediators\\' Institute of Ireland (MII) or the Irish Professional Mediators\\' Organisation (IPMO), is crucial. These organisations offer networking events, training, resources, and opportunities to connect with peers and potential referral sources. Active participation can enhance your credibility and visibility within the mediation community.\\n\\n• Connect with Referral Sources: Develop strong relationships with professionals who are likely to encounter individuals or organisations needing mediation services. This includes solicitors (particularly those in family law, employment law, and commercial litigation), HR professionals, employee relations managers, trade unions, community groups, healthcare providers, and other complementary service providers like therapists or financial advisors. Educate them about your specific mediation services and the benefits for their clients or contacts. Consider offering introductory sessions or presentations to these groups."
   },
   "c2s1": {
-    title: "The Mediation Act 2017",
-    content: "The Mediation Act 2017 is a key piece of legislation in Ireland that promotes mediation as an alternative dispute resolution mechanism. It requires solicitors to advise clients to consider mediation and provides a framework for the conduct of mediation."
+    title: "Implement a Targeted Content Marketing Strategy",
+    content: "Content marketing helps you demonstrate your expertise, build trust, and attract your target audience by providing valuable information.\\n\\n• Create Valuable Content: Regularly produce content that addresses the issues your target clients face and explains how mediation can help. This could include blog posts on common conflict scenarios (maintaining strict confidentiality, of course), articles explaining the mediation process in specific contexts (e.g., workplace disputes, separating couples), informative videos answering frequently asked questions about mediation, or even infographics illustrating the benefits. Sharing insights on conflict resolution skills can also be valuable.\\n\\n• Leverage Your Website and Online Platforms: Publish your content on your professional website, which serves as your central hub. Share it across relevant online platforms like LinkedIn. Consider contributing articles to industry publications or websites that your target audience reads."
   },
-  "c2s2": {
-    title: "Professional Standards and Accreditation",
-    content: "Mediators in Ireland are expected to adhere to high professional standards. Organizations like the Mediators' Institute of Ireland (MII) provide accreditation and codes of ethics for mediators, ensuring quality and consistency in practice."
+  "c3s1": {
+    title: "Deliver Engaging Presentations and Workshops",
+    content: "Offering presentations and workshops is an excellent way to raise awareness about mediation and showcase your skills and expertise.\\n\\n• Offer Introductory Sessions: Propose delivering talks to potential referral sources (law firms, HR departments, community centres) or directly to potential client groups. Focus on explaining what mediation is, how it works, its benefits, and in which situations it is most effective.\\n\\n• Design Workshops: Develop interactive workshops on specific conflict resolution skills or the mediation process. These can attract participants who may benefit from your services in the future or become referral sources themselves. Tailor the content to the specific needs and interests of the audience."
   },
-  "c2s3": {
-    title: "Family Law in Ireland",
-    content: "A foundational understanding of Irish family law, including legislation related to divorce, separation, child custody, and financial settlements, is crucial for family mediators to guide parties effectively within the legal framework."
+  "c4s1": {
+    title: "Establish Clear Fees and Payment Procedures",
+    content: "Transparency around fees and payment is essential for a professional practice and helps manage client expectations.\\n\\n• Determine Your Fee Structure: Research typical fee structures for mediators in Ireland, which commonly include hourly rates, per-session fees, or occasionally flat fees for specific types of mediation. Your fees should reflect your experience, expertise, and the complexity of the cases you handle. Be clear about what is included in your fees (e.g., preparation time, session time, drafting of agreements).\\n\\n• Establish Clear Payment Terms: Outline your payment procedures in your service agreement or contract. Specify when payment is due (e.g., in advance of sessions, upon completion), accepted payment methods, and your policy on cancellations or postponements. Ensure clients understand the fee structure and payment process before commencing mediation."
   },
-  // Add other chapter content here...
+  "c5s1": {
+    title: "Develop Standard Operating Procedures (SOPs)",
+    content: "Implementing SOPs brings efficiency, consistency, and professionalism to your practice as it grows.\\n\\n• Create Processes for Key Stages: Document your procedures for client intake (initial contact, screening for suitability), scheduling sessions, managing case files, conducting mediation sessions (including pre-mediation, joint sessions, caucuses), drafting mediated agreements, and post-mediation follow-up.\\n\\n• Ensure Consistency and Quality: SOPs help ensure that every client receives a consistent and high-quality service, regardless of who on your team (if you expand) is handling the case. They also help with training new staff if applicable."
+  },
+  "c6s1": {
+    title: "Seek Mentorship and Professional Support",
+    content: "Navigating the challenges of growing a business is easier with guidance from experienced professionals.\\n\\n• Connect with Experienced Mediators: Seek out mentors who have successfully built and grown their own mediation practices. They can offer invaluable advice, share lessons learned, and provide support. Professional organisations like the MII often have mentorship programmes or facilitate connections between members.\\n\\n• Engage in Peer Supervision/Support: Participate in peer supervision or reflective practice groups. Discussing challenging cases and business issues with fellow mediators can provide new perspectives and reinforce best practises."
+  },
+  "c7s1": {
+    title: "Continuously Evaluate and Adapt",
+    content: "The market and the legal landscape are constantly evolving. Regular evaluation ensures your practice remains relevant and successful.\\n\\n• Review Business Performance: Periodically review your business plan, marketing activities, financial performance, and client feedback. What is working well? What could be improved? Identify areas where you need to adapt your strategies.\\n\\n• Stay Updated on Legislation and Best Practises: Commit to ongoing professional development. Stay informed about changes in mediation legislation, such as amendments to the Mediation Act 2017, and evolving best practises in the field."
+  },
+  "c8s1": {
+    title: "Understand the Legal and Ethical Landscape in Ireland",
+    content: "Operating within the legal and ethical framework is paramount for maintaining credibility and protecting your practice.\\n\\n• Mediation Act 2017: Familiarise yourself thoroughly with this key piece of legislation in Ireland. Understand its provisions regarding the principles of mediation (voluntary, confidential, facilitated), the role of the mediator, the enforceability of mediated settlement agreements, and the obligations it places on legal advisors to advise clients on mediation.\\n\\n• Code of Conduct: Adhere strictly to the ethical guidelines and codes of conduct set forth by relevant professional bodies to which you belong, such as the MII Code of Ethics and Practice and the IPMO Code of Ethics. These codes provide essential guidance on issues like impartiality, confidentiality, conflicts of interest, and professional competence.\\n\\n• Data Protection (GDPR): As a mediator handling sensitive personal information, you have significant obligations under the General Data Protection Regulation (GDPR). \\n\\nUnderstand your responsibilities regarding the lawful collection, processing, storage, and security of client data. Ensure you have appropriate data protection policies and procedures in place, including obtaining explicit consent where necessary and securely managing case files.\\n\\nBy proactively implementing these strategies and remaining committed to professional development and ethical practice, you can effectively grow and sustain a successful mediation business in Ireland."
+  }
 };
 
-const GuidesGettingStarted = () => {
+const GuidesGrowYourBusiness = () => {
   const isMobile = useIsMobile();
   const [activeChapter, setActiveChapter] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [progress, setProgress] = useState<number>(0);
+  const [currentGuideContent, setCurrentGuideContent] = useState(guideContent);
+  const [selectedSectionContent, setSelectedSectionContent] = useState<{ title: string; content: string } | null>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(guideContent.chapters[0]?.sections[0]?.id || null);
 
   useEffect(() => {
     // Calculate progress based on completed sections
     const totalProgress = (guideContent.completedSections / guideContent.totalSections) * 100;
     setProgress(totalProgress);
   }, []);
+
+  useEffect(() => {
+    // Logic to load initial section content or handle updates
+    if (activeSection && chapterContent[activeSection]) {
+      setSelectedSectionContent(chapterContent[activeSection]);
+    } else if (guideContent.chapters.length > 0 && guideContent.chapters[0].sections.length > 0) {
+      // Fallback to the first section of the first chapter if activeSection is not found
+      const firstChapter = guideContent.chapters[0];
+      const firstSectionId = firstChapter.sections[0].id;
+      if (chapterContent[firstSectionId]) {
+        setSelectedSectionContent(chapterContent[firstSectionId]);
+        setActiveChapter(firstChapter.id);
+        setActiveSection(firstSectionId);
+      }
+    } else {
+        setSelectedSectionContent(null);
+    }
+  }, [activeSection]);
 
   const markCompleted = (sectionId: string) => {
     // In a real implementation, this would update a database
@@ -241,6 +231,43 @@ const GuidesGettingStarted = () => {
       ...prev,
       [sectionId]: !prev[sectionId]
     }));
+  };
+
+  const handleSectionSelect = (chapterId: string, sectionId: string) => {
+    setActiveChapter(chapterId);
+    setActiveSection(sectionId);
+    setSelectedSectionContent(chapterContent[sectionId]);
+  };
+
+  // Placeholder for progress update logic
+  const handleMarkComplete = (sectionId: string) => {
+    console.log(`Marking section ${sectionId} as complete`);
+    // This is where you would update the completion status in currentGuideContent
+    // For example, find the chapter and section, mark as complete, update progress counts
+    // Then, setCurrentGuideContent with the new state
+    // This is a simplified example:
+    const newGuideContent = { ...currentGuideContent };
+    let updated = false;
+    for (const chapter of newGuideContent.chapters) {
+      for (const section of chapter.sections) {
+        if (section.id === sectionId && !section.completed) {
+          section.completed = true;
+          newGuideContent.completedSections += 1;
+          // Check if chapter is complete
+          const chapterSections = newGuideContent.chapters.find(c => c.id === chapter.id)?.sections;
+          if (chapterSections?.every(s => s.completed)) {
+            chapter.completed = true;
+            newGuideContent.completedChapters +=1;
+          }
+          updated = true;
+          break;
+        }
+      }
+      if (updated) break;
+    }
+    if (updated) {
+      setCurrentGuideContent(newGuideContent);
+    }
   };
 
   return (
@@ -449,4 +476,4 @@ const GuidesGettingStarted = () => {
   );
 };
 
-export default GuidesGettingStarted;
+export default GuidesGrowYourBusiness;

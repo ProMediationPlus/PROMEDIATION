@@ -15,6 +15,10 @@ export const paths = {
   storage: '/storage',
   forms: '/forms',
   guides: '/guides',
+  guidesGettingStarted: '/guides/getting-started',
+  guidesBusinessSetUp: '/guides/business-set-up', // Added new path for Business Set Up guide
+  guidesMediateSuccess: '/guides/mediate-success', // Add path for the new guide
+  guidesGrowYourBusiness: '/guides/grow-your-business', // Added new path for Grow Your Business guide
   
   // Admin section paths
   admin: {
